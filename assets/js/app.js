@@ -230,7 +230,10 @@
   $('#settingsBtn').addEventListener('click', openDrawer);
   $('#drawerClose').addEventListener('click', closeDrawer);
   scrim.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('keydown', (e) => {
+    // Defer to the tour / help surfaces — they own Escape while open.
+    if (e.key === 'Escape' && !(window.Tour && Tour.active) && !(window.HelpUI && HelpUI.anyOpen())) closeDrawer();
+  });
 
   $('#currencySelect').addEventListener('change', (e) => {
     Store.setSetting('currency', e.target.value);
@@ -313,6 +316,9 @@
 
   document.addEventListener('store:changed', renderAll);
   renderAll();
+
+  // Minimal public API so help.js / tour.js can reuse UI plumbing.
+  window.Dashboard = { openDrawer, closeDrawer, toast, renderAll };
 
   // Animate progress bars in on first paint.
   requestAnimationFrame(() => document.body.classList.add('is-ready'));

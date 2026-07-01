@@ -52,6 +52,17 @@ You can double-click `index.html` on your PC and it opens the dashboard **offlin
 
 ---
 
+## 2.5 Built-in help (fastest way to learn) 🧭
+
+The dashboard teaches itself — click **Help** in the top-right corner:
+
+- **📖 Read Me** — this guide, condensed and styled, right inside the dashboard.
+- **🧭 Guide Me** — an interactive spotlight tutorial that walks you through every feature step by step. Choose the **Full tour (~2 min, 12 steps)** or **Quick tour (~1 min, 6 steps)**. It even has you edit a real value mid-tour. Navigate with **Next / Previous**, and press **Escape** anytime to get an exit confirmation.
+- First-time visitors on a new browser are offered the tour automatically (one-time welcome card).
+- The same options live in **Settings → How to use**.
+
+---
+
 ## 3. Daily use (the 60-second routine)
 
 1. Open the **live dashboard**: https://vaugnstudio-cloud.github.io/personal-dashboard/

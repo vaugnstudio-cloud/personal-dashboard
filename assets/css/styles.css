@@ -573,6 +573,308 @@ input[type='number'] { -moz-appearance: textfield; appearance: textfield; }
 .footer a { color: var(--text-dim); text-decoration: none; }
 .footer a:hover { color: var(--text); }
 
+/* ── Topbar actions ──────────────────────────────────────── */
+
+.topbar__actions { display: flex; gap: 10px; }
+
+/* ── Modals (help chooser + welcome) ─────────────────────── */
+
+[hidden] { display: none !important; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 6, 10, 0.66);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.25s ease;
+}
+@keyframes fade-in { from { opacity: 0; } }
+
+.modal__card {
+  position: relative;
+  width: min(460px, 100%);
+  background: var(--bg-raise);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), var(--glow);
+  padding: 28px;
+  animation: pop-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+
+.modal__card--welcome { text-align: center; }
+
+.modal__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--gradient);
+  color: #0a0c10;
+  font: 700 20px var(--font-display);
+  box-shadow: var(--glow);
+  margin-bottom: 14px;
+}
+
+.modal__title { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin: 0 0 6px; }
+.modal__sub { margin: 0 0 20px; font-size: 13.5px; color: var(--text-dim); }
+
+.modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--stroke);
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  z-index: 2;
+}
+.modal__close:hover { color: var(--text); border-color: var(--stroke-strong); }
+
+.modal__back {
+  margin-top: 16px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font: 500 13px var(--font-body);
+  cursor: pointer;
+}
+.modal__back:hover { color: var(--text); }
+
+.help-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.help-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 18px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--stroke);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.help-option:hover { border-color: var(--accent-1); background: var(--surface-hover); transform: translateY(-2px); }
+.help-option__emoji { font-size: 22px; }
+.help-option__name { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.help-option__desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+
+.btn-row--stack { flex-direction: column; }
+.btn-row--stack .btn { width: 100%; }
+
+.btn--ghost { background: none; border-color: transparent; color: var(--text-faint); }
+.btn--ghost:hover { color: var(--text); background: var(--surface); border-color: var(--stroke); }
+
+/* ── Read Me guide panel ─────────────────────────────────── */
+
+.guide {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  overflow-y: auto;
+  background: rgba(6, 8, 12, 0.88);
+  backdrop-filter: blur(8px);
+  animation: fade-in 0.25s ease;
+}
+
+.guide__inner {
+  position: relative;
+  max-width: 720px;
+  margin: 40px auto 80px;
+  background: var(--bg-raise);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(24px, 5vw, 48px);
+  animation: pop-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.guide__close { position: absolute; top: 18px; right: 18px; background: var(--bg-raise); }
+
+.guide__badge {
+  display: inline-block;
+  font: 700 11px var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  border: 1px solid rgba(45, 212, 255, 0.3);
+  border-radius: 999px;
+  padding: 3px 12px;
+  margin-bottom: 14px;
+}
+
+.guide__hero h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.guide__hero p { color: var(--text-dim); font-size: 14px; margin: 0 0 8px; }
+
+.guide__section {
+  border-top: 1px solid var(--stroke);
+  margin-top: 26px;
+  padding-top: 22px;
+}
+.guide__section h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+.guide__num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-2);
+  border: 1px solid rgba(45, 212, 255, 0.3);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.guide__section p, .guide__section li { font-size: 13.5px; color: var(--text-dim); }
+.guide__section p strong, .guide__section li strong { color: var(--text); }
+.guide__section ol, .guide__section ul { margin: 0 0 10px; padding-left: 22px; }
+.guide__section li { margin-bottom: 6px; }
+.guide__section a { color: var(--accent-2); text-decoration: none; }
+.guide__section a:hover { text-decoration: underline; }
+.guide__links { list-style: none; padding-left: 0 !important; }
+.guide__links li { margin-bottom: 8px; }
+
+.guide kbd {
+  font: 600 11.5px var(--font-body);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--stroke-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+.guide code {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.guide__cta {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px dashed var(--stroke-strong);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.guide__cta p { margin: 0 0 12px; font-size: 13.5px; color: var(--text-dim); }
+.guide__cta .btn-row { justify-content: center; }
+.guide__cta .btn { flex: none; }
+
+/* ── Tour (spotlight tutorial) ───────────────────────────── */
+
+.tour { position: fixed; inset: 0; z-index: 70; pointer-events: none; }
+
+.tour__blocker { position: absolute; inset: 0; pointer-events: auto; }
+
+.tour__spotlight {
+  position: fixed;
+  border-radius: 20px;
+  box-shadow: 0 0 0 9999px rgba(4, 6, 10, 0.78);
+  border: 1.5px solid rgba(124, 92, 255, 0.9);
+  outline: 3px solid rgba(124, 92, 255, 0.25);
+  transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1), left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.4s cubic-bezier(0.22, 1, 0.36, 1), height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.tour__tip {
+  position: fixed;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--bg-raise);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), var(--glow);
+  padding: 20px 20px 18px;
+  pointer-events: auto;
+  transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1), left 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tour__x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--stroke);
+  background: none;
+  color: var(--text-faint);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tour__x:hover { color: var(--text); border-color: var(--stroke-strong); }
+
+.tour__count {
+  margin: 0 0 6px;
+  font: 700 11px var(--font-display);
+  letter-spacing: 0.12em;
+  color: var(--accent-2);
+}
+.tour__title { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; margin: 0 0 6px; }
+.tour__text { margin: 0 0 16px; font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+.tour__controls { display: flex; gap: 8px; }
+.tour__controls .btn { flex: none; min-width: 0; padding: 8px 14px; font-size: 12.5px; }
+.tour__controls #tourNext { margin-left: auto; }
+
+@media (max-width: 560px) {
+  .tour__tip {
+    top: auto !important;
+    left: 12px !important;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+  }
+}
+
+/* ── Exit-tour confirmation ──────────────────────────────── */
+
+.tour-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 6, 10, 0.55);
+  animation: fade-in 0.2s ease;
+}
+
+.tour-confirm__card {
+  width: min(340px, 100%);
+  background: var(--bg-raise);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  text-align: center;
+  animation: pop-in 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tour-confirm__msg { margin: 0 0 16px; font: 600 15px var(--font-display); }
+
 /* ── Entry animation ─────────────────────────────────────── */
 
 .hero, .hero-stats, .section {

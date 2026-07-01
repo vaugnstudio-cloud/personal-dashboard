@@ -24,6 +24,15 @@
           <span class="brand__sub">Personal Dashboard</span>
         </span>
       </div>
+      <div class="topbar__actions">
+      <button class="icon-btn" id="helpBtn" aria-label="How to use this dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <path d="M12 17h.01"/>
+        </svg>
+        Help
+      </button>
       <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
@@ -31,6 +40,7 @@
         </svg>
         Settings
       </button>
+      </div>
     </header>
 
     <!-- Hero -->
@@ -67,7 +77,16 @@
       <button class="drawer__close" id="drawerClose" aria-label="Close settings">✕</button>
     </div>
 
-    <div class="drawer__section">
+    <div class="drawer__section" id="drawerHowTo">
+      <h3>How to use</h3>
+      <p>New here? Read the guide or let the dashboard walk you through it.</p>
+      <div class="btn-row">
+        <button class="btn" id="howtoReadBtn">📖 Read me</button>
+        <button class="btn btn--primary" id="howtoTourBtn">🧭 Guide me</button>
+      </div>
+    </div>
+
+    <div class="drawer__section" id="drawerPrefs">
       <h3>Preferences</h3>
       <p>Display options for the whole dashboard.</p>
       <label class="field"><span>Your name</span>
@@ -91,7 +110,7 @@
       </label>
     </div>
 
-    <div class="drawer__section">
+    <div class="drawer__section" id="drawerSheets">
       <h3>Google Sheets sync</h3>
       <p>Optional. Deploy <code>apps-script/Code.gs</code> as a Web App under your own Google account, then paste its URL here. The URL is stored only in this browser — never in the repo. See the README for the 2-minute setup.</p>
       <label class="field"><span>Apps Script Web App URL</span>
@@ -103,7 +122,7 @@
       </div>
     </div>
 
-    <div class="drawer__section">
+    <div class="drawer__section" id="drawerBackup">
       <h3>Backup</h3>
       <p>Download or restore all values, goals and settings as a JSON file.</p>
       <div class="btn-row">
@@ -123,9 +142,101 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <!-- Help modal: Read Me / Guide Me chooser -->
+  <div class="modal" id="helpModal" hidden role="dialog" aria-modal="true" aria-label="How to use">
+    <div class="modal__card">
+      <button class="modal__close" id="helpClose" aria-label="Close">✕</button>
+      <div id="helpChooser">
+        <h2 class="modal__title">How to use</h2>
+        <p class="modal__sub">Pick the way you like to learn.</p>
+        <div class="help-options">
+          <button class="help-option" id="helpReadMe">
+            <span class="help-option__emoji">📖</span>
+            <span class="help-option__name">Read Me</span>
+            <span class="help-option__desc">Everything explained, at your own pace</span>
+          </button>
+          <button class="help-option" id="helpGuideMe">
+            <span class="help-option__emoji">🧭</span>
+            <span class="help-option__name">Guide Me</span>
+            <span class="help-option__desc">Interactive step-by-step tour</span>
+          </button>
+        </div>
+      </div>
+      <div id="helpTourPick" hidden>
+        <h2 class="modal__title">Choose your tour</h2>
+        <p class="modal__sub">Both are interactive — you'll even edit a real value.</p>
+        <div class="help-options">
+          <button class="help-option" data-tour="full">
+            <span class="help-option__emoji">🧭</span>
+            <span class="help-option__name">Full tour</span>
+            <span class="help-option__desc">~2 min · every feature, incl. Settings &amp; sync</span>
+          </button>
+          <button class="help-option" data-tour="quick">
+            <span class="help-option__emoji">⚡</span>
+            <span class="help-option__name">Quick tour</span>
+            <span class="help-option__desc">~1 min · just the essentials</span>
+          </button>
+        </div>
+        <button class="modal__back" id="helpBack">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- First-visit welcome card -->
+  <div class="modal" id="welcomeModal" hidden role="dialog" aria-modal="true" aria-label="Welcome">
+    <div class="modal__card modal__card--welcome">
+      <span class="modal__mark">V</span>
+      <h2 class="modal__title">Welcome to your dashboard 👋</h2>
+      <p class="modal__sub">Track your money, business, content and health — all in one place. Want a quick walkthrough first?</p>
+      <div class="btn-row btn-row--stack">
+        <button class="btn btn--primary" data-tour="full">🧭 Full tour (~2 min)</button>
+        <button class="btn" data-tour="quick">⚡ Quick tour (~1 min)</button>
+        <button class="btn btn--ghost" id="welcomeLater">Maybe later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Read Me guide panel -->
+  <div class="guide" id="guidePanel" hidden role="dialog" aria-modal="true" aria-label="How to use guide">
+    <div class="guide__inner">
+      <button class="modal__close guide__close" id="guideClose" aria-label="Close guide">✕</button>
+      <div id="guideContent"></div>
+    </div>
+  </div>
+
+  <!-- Tour overlay -->
+  <div class="tour" id="tour" hidden>
+    <div class="tour__blocker" id="tourBlocker"></div>
+    <div class="tour__spotlight" id="tourSpotlight"></div>
+    <div class="tour__tip" id="tourTip" role="dialog" aria-live="polite">
+      <button class="tour__x" id="tourClose" aria-label="Exit tutorial">✕</button>
+      <p class="tour__count" id="tourCount"></p>
+      <h3 class="tour__title" id="tourTitle"></h3>
+      <p class="tour__text" id="tourText"></p>
+      <div class="tour__controls">
+        <button class="btn btn--ghost" id="tourExit">Exit</button>
+        <button class="btn" id="tourPrev" hidden>← Previous</button>
+        <button class="btn btn--primary" id="tourNext">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exit-tour confirmation -->
+  <div class="tour-confirm" id="tourConfirm" hidden role="alertdialog" aria-label="Exit tutorial confirmation">
+    <div class="tour-confirm__card">
+      <p class="tour-confirm__msg">Do you want to exit the tutorial?</p>
+      <div class="btn-row">
+        <button class="btn btn--primary" id="tourConfirmNo">No, continue</button>
+        <button class="btn" id="tourConfirmYes">Yes, exit</button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/data.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/sheets-sync.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/tour.js"></script>
+  <script src="assets/js/help.js"></script>
 </body>
 </html>

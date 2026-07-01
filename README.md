@@ -6,6 +6,8 @@ A dark-premium personal metrics dashboard — finance, business, content & healt
 
 **📘 Full instructions / SOP:** [SOP.md](SOP.md) — daily routine, backups, Google Sheets setup, editing & troubleshooting.
 
+**🧭 Built-in help:** click **Help** (top-right on the dashboard) for an in-app guide (*Read Me*) or an interactive spotlight tutorial (*Guide Me* — full ~2 min or quick ~1 min tour). First-time visitors are offered the tour automatically.
+
 ![Dark premium dashboard tracking 19 personal metrics with goals and progress bars](#)
 
 ## What it tracks
