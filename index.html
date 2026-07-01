@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaugn — Personal Dashboard</title>
+  <meta name="description" content="Personal metrics dashboard — finance, business, content & health, tracked in one place." />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text x='50' y='68' font-size='52' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230a0c10'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark">V</span>
+        <span>
+          Vaugn Studio
+          <span class="brand__sub">Personal Dashboard</span>
+        </span>
+      </div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Settings
+      </button>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Overview">
+      <div>
+        <p class="hero__date" id="todayLine"></p>
+        <h1 class="hero__title"><span id="greeting"></span><br />Here's where <em>everything</em> stands.</h1>
+        <p class="hero__meta" id="lastUpdated"></p>
+      </div>
+      <div class="ring" id="overallRing" role="img" aria-label="Overall progress toward all goals">
+        <div class="ring__inner">
+          <span class="ring__pct" id="overallPct">0%</span>
+          <span class="ring__label">All goals</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="hero-stats" id="heroStats" aria-label="Headline stats"></div>
+
+    <!-- Metric sections (rendered by app.js) -->
+    <main id="sections"></main>
+
+    <footer class="footer">
+      <span>Data lives in your browser · optional Google Sheets sync in Settings</span>
+      <span>Designed &amp; tracked by Vaugn Studio</span>
+    </footer>
+  </div>
+
+  <!-- Settings drawer -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Settings">
+    <div class="drawer__head">
+      <h2 class="drawer__title">Settings</h2>
+      <button class="drawer__close" id="drawerClose" aria-label="Close settings">✕</button>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Preferences</h3>
+      <p>Display options for the whole dashboard.</p>
+      <label class="field"><span>Your name</span>
+        <input type="text" id="nameInput" placeholder="Vaugn" />
+      </label>
+      <label class="field"><span>Currency</span>
+        <select id="currencySelect">
+          <option value="USD">USD — US Dollar</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="GBP">GBP — British Pound</option>
+          <option value="PHP">PHP — Philippine Peso</option>
+          <option value="AUD">AUD — Australian Dollar</option>
+          <option value="CAD">CAD — Canadian Dollar</option>
+        </select>
+      </label>
+      <label class="field"><span>Weight unit</span>
+        <select id="weightUnitSelect">
+          <option value="lbs">Pounds (lbs)</option>
+          <option value="kg">Kilograms (kg)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Google Sheets sync</h3>
+      <p>Optional. Deploy <code>apps-script/Code.gs</code> as a Web App under your own Google account, then paste its URL here. The URL is stored only in this browser — never in the repo. See the README for the 2-minute setup.</p>
+      <label class="field"><span>Apps Script Web App URL</span>
+        <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/…/exec" />
+      </label>
+      <div class="btn-row">
+        <button class="btn btn--primary" id="pushBtn">Push to Sheet</button>
+        <button class="btn" id="pullBtn">Pull from Sheet</button>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Backup</h3>
+      <p>Download or restore all values, goals and settings as a JSON file.</p>
+      <div class="btn-row">
+        <button class="btn" id="exportBtn">Export JSON</button>
+        <label class="btn file-btn">Import JSON<input type="file" id="importInput" accept="application/json,.json" /></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Danger zone</h3>
+      <p>Erase everything stored in this browser and start over.</p>
+      <div class="btn-row">
+        <button class="btn btn--danger" id="resetBtn">Reset all data</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/sheets-sync.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
