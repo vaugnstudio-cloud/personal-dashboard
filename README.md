@@ -4,6 +4,8 @@ A dark-premium personal metrics dashboard — finance, business, content & healt
 
 **Live:** https://vaugnstudio-cloud.github.io/personal-dashboard/
 
+**📘 Full instructions / SOP:** [SOP.md](SOP.md) — daily routine, backups, Google Sheets setup, editing & troubleshooting.
+
 ![Dark premium dashboard tracking 19 personal metrics with goals and progress bars](#)
 
 ## What it tracks
