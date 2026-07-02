@@ -6,9 +6,28 @@
   'use strict';
 
   Store.load();
+  if (window.CrmStore) CrmStore.load();
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  /* ── Pipeline (CRM) sync ────────────────────────────────── */
+
+  function crmSynced() {
+    return window.CrmStore && CrmStore.hasData() && Store.state.settings.kpiSync !== false;
+  }
+
+  /** Auto-sync Leads & Clients metric values from the pipeline (silent). */
+  function syncFromCrm() {
+    if (!crmSynced()) return;
+    const s = CrmStore.stats();
+    let changed = false;
+    if (Store.state.metrics.leads.value !== s.openLeads) { Store.state.metrics.leads.value = s.openLeads; changed = true; }
+    if (Store.state.metrics.clients.value !== s.activeClients) { Store.state.metrics.clients.value = s.activeClients; changed = true; }
+    if (changed) {
+      try { localStorage.setItem('vaugn.dashboard.v1', JSON.stringify(Store.state)); } catch (e) { /* ignore */ }
+    }
+  }
 
   /* ── Formatting ─────────────────────────────────────────── */
 
@@ -82,7 +101,7 @@
       id: 'heroClients', label: 'Active Clients', icon: 'users',
       compute: () => v('clients'),
       format: (n) => new Intl.NumberFormat().format(n),
-      sub: `${new Intl.NumberFormat().format(v('leads'))} leads in pipeline`,
+      sub: () => `${new Intl.NumberFormat().format(v('leads'))} leads in pipeline`,
     },
   ];
 
@@ -96,7 +115,7 @@
           <div class="hero-stat__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[h.icon]}</svg></div>
           <p class="hero-stat__label">${h.label}</p>
           <p class="hero-stat__value ${negative ? 'is-negative' : ''}">${h.format(val)}</p>
-          <p class="hero-stat__sub">${h.sub}</p>
+          <p class="hero-stat__sub">${typeof h.sub === 'function' ? h.sub() : h.sub}</p>
         </article>`;
     }).join('');
   }
@@ -107,14 +126,20 @@
     const s = Store.get(metric.id);
     const pct = Math.round(progress(metric) * 100);
     const done = metric.direction === 'down' ? (s.value > 0 && s.value <= s.goal) : (s.goal > 0 && s.value >= s.goal);
+    // Leads & Clients auto-sync from the pipeline: value becomes a link, not an editor.
+    const synced = crmSynced() && (metric.id === 'leads' || metric.id === 'clients');
+    const valueHTML = synced
+      ? `<a class="card__value card__value--link" href="crm.html${metric.id === 'clients' ? '#status=won' : ''}" title="Computed from your pipeline — click to open">${fmt(metric, s.value)}</a>`
+      : `<button class="card__value" data-edit="value" title="Click to edit value">${fmt(metric, s.value)}</button>`;
     return `
       <article class="card ${done ? 'is-done' : ''}" data-metric="${metric.id}">
         <header class="card__head">
           <span class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[metric.icon]}</svg></span>
           <h3 class="card__label">${metric.label}${metric.per ? `<span class="card__per">${metric.per}</span>` : ''}</h3>
+          ${synced ? '<span class="card__auto" title="Computed from your Sales Pipeline">Auto · Pipeline</span>' : ''}
           ${done ? '<span class="card__badge" title="Goal reached">✓</span>' : ''}
         </header>
-        <button class="card__value" data-edit="value" title="Click to edit value">${fmt(metric, s.value)}</button>
+        ${valueHTML}
         <div class="card__goal">
           <span class="card__goal-label">${metric.direction === 'down' ? 'Target' : 'Goal'}</span>
           <button class="card__goal-value" data-edit="goal" title="Click to edit ${metric.direction === 'down' ? 'target' : 'goal'}">${fmt(metric, s.goal)}</button>
@@ -185,6 +210,26 @@
     const btn = e.target.closest('[data-edit]');
     if (btn) beginEdit(btn);
   });
+
+  /* ── Pipeline summary strip ─────────────────────────────── */
+
+  function renderPipeline() {
+    const wrap = $('#pipeStrip');
+    if (!wrap) return;
+    if (!window.CrmStore || !CrmStore.hasData()) { wrap.innerHTML = ''; return; }
+    const s = CrmStore.stats();
+    const due = s.dueToday + s.overdue;
+    wrap.innerHTML = `
+      <div class="pipe-strip">
+        <a class="pipe-strip__title" href="crm.html">🧭 Sales Pipeline →</a>
+        <div class="pipe-strip__stats">
+          <span><strong>${fmtMoney(s.pipelineValue)}</strong> pipeline</span>
+          <span><strong>${s.openLeads}</strong> open</span>
+          <span><strong>${s.winRate === null ? '—' : Math.round(s.winRate * 100) + '%'}</strong> win rate</span>
+          <a href="crm.html#status=due" class="${due ? 'pipe-strip__due' : ''}"><strong>${due}</strong> due</a>
+        </div>
+      </div>`;
+  }
 
   /* ── Header meta ────────────────────────────────────────── */
 
@@ -309,12 +354,30 @@
   /* ── Render all ─────────────────────────────────────────── */
 
   function renderAll() {
+    syncFromCrm();
     renderHero();
     renderSections();
+    renderPipeline();
     renderMeta();
   }
 
   document.addEventListener('store:changed', renderAll);
+
+  // KPI sync toggle (Settings → Preferences)
+  const kpiToggle = $('#kpiSyncToggle');
+  if (kpiToggle) {
+    kpiToggle.checked = Store.state.settings.kpiSync !== false;
+    kpiToggle.addEventListener('change', (e) => {
+      Store.setSetting('kpiSync', e.target.checked);
+      toast(e.target.checked ? 'Leads & Clients now sync from your pipeline.' : 'Leads & Clients are manual again.');
+    });
+  }
+
+  // Live-refresh when the pipeline changes in another tab
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'vaugn.crm.v1' && window.CrmStore) { CrmStore.load(); renderAll(); }
+  });
+
   renderAll();
 
   // Minimal public API so help.js / tour.js can reuse UI plumbing.

@@ -1,6 +1,6 @@
-# Personal Dashboard
+# Personal Dashboard + Sales Pipeline CRM
 
-A dark-premium personal metrics dashboard — finance, business, content & health in one place. Pure HTML/CSS/JS, no build step, no backend required.
+A dark-premium Business Operating System — 19 life/business metrics **plus a full Sales Pipeline CRM** in one place. Pure HTML/CSS/JS, no build step, no backend required.
 
 **Live:** https://vaugnstudio-cloud.github.io/personal-dashboard/
 
@@ -20,6 +20,18 @@ A dark-premium personal metrics dashboard — finance, business, content & healt
 | **Health & Learning** | Weight, Hours Learned, Hours Worked |
 
 Plus a computed hero: **Net Monthly Income**, **Total Saved**, **MRR**, **Active Clients**, and an overall progress ring across all goals.
+
+## 🧭 Sales Pipeline (CRM)
+
+The `Sales Pipeline` tab is a full CRM for every lead — website, cold email, LinkedIn, Instagram, referrals, returning clients, product customers:
+
+- **19-field lead records** (business, contact, problem noticed, best offer, deal value…) in a fast table with status badges, R·C·P indicators, inline editing and a detail drawer
+- **8 pipeline stages** with smart nudges (Contacted auto-fills dates; a reply advances the status)
+- **Stats bar**: Pipeline Value · Due Today · Open Leads · Win Rate · Won This Month
+- **Search (`/`), filter chips, column manager, sorting, bulk actions, undo, keyboard shortcuts (`N`, `↑↓`, `Enter`, `J/K`)**
+- **Dashboard sync**: Leads & Active Clients auto-compute from the pipeline ("Auto · Pipeline" badge); winning a deal offers — never forces — adding the value to MRR or income
+- **Follow-up digest** on load when follow-ups are due
+- **Help Center** (Help button): searchable docs, Quick/Complete guides, SOPs, definitions, FAQ
 
 ## How it works
 

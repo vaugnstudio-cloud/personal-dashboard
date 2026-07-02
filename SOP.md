@@ -52,6 +52,16 @@ You can double-click `index.html` on your PC and it opens the dashboard **offlin
 
 ---
 
+## 2.4 Sales Pipeline (CRM) 🧭
+
+The **Sales Pipeline** tab (top navigation) is your CRM — every lead from every channel, tracked from first touch to Won or Lost.
+
+**Daily driver:** press <kbd>N</kbd> to add a lead → fill Business Name + Channel + Follow-Up Date (everything saves as you type) → each morning click the **⚠ Due** chip and clear your follow-ups. Click any status badge to move a deal through the 8 stages. Winning a deal asks (never forces) to add the money to your dashboard's MRR or income. **Leads** and **Active Clients** on the dashboard update automatically from the pipeline.
+
+Full documentation — including the Sales SOP, Follow-Up SOP, Proposal SOP and the Daily/Weekly/Monthly/Quarterly operating rhythm — lives in the **Help Center** (Help button on any page). The pipeline has its own JSON backup: **⋯ menu → Export JSON backup** (do it monthly, same as the dashboard one).
+
+---
+
 ## 2.5 Built-in help (fastest way to learn) 🧭
 
 The dashboard teaches itself — click **Help** in the top-right corner:
