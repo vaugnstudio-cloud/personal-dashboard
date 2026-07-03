@@ -449,6 +449,31 @@
     $('#moreMenu').hidden = !$('#moreMenu').hidden;
     $('#colPop').hidden = true;
   });
+  async function runLeadSync(kind) {
+    const btn = kind === 'push' ? $('#crmPush') : $('#crmPull');
+    if (!SheetsSync.isConfigured) {
+      toast('Add your Apps Script URL in Dashboard → Settings → Google Sheets sync first.', 'error');
+      $('#moreMenu').hidden = true;
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = kind === 'push' ? '☁ Pushing…' : '☁ Pulling…';
+    try {
+      const n = kind === 'push' ? await SheetsSync.pushLeads() : await SheetsSync.pullLeads();
+      toast(kind === 'push'
+        ? `Pushed ${n} lead${n === 1 ? '' : 's'} to your sheet.`
+        : (n ? `Pulled ${n} lead${n === 1 ? '' : 's'} from your sheet.` : 'Sheet has no leads yet — try Push first.'));
+    } catch (err) {
+      toast(err.message || 'Sync failed.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = kind === 'push' ? '☁ Push to Google Sheet' : '☁ Pull from Google Sheet';
+      $('#moreMenu').hidden = true;
+    }
+  }
+  $('#crmPush').addEventListener('click', () => runLeadSync('push'));
+  $('#crmPull').addEventListener('click', () => runLeadSync('pull'));
+
   $('#crmExport').addEventListener('click', () => { CrmStore.exportJSON(); toast('Pipeline backup downloaded.'); $('#moreMenu').hidden = true; });
   $('#crmImport').addEventListener('change', async (e) => {
     const file = e.target.files[0];

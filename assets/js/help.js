@@ -84,16 +84,28 @@
     },
     {
       id: 'sheets-sync', group: 'dashboard', quick: false, title: 'Google Sheets Sync',
-      tags: 'google sheets apps script sync push pull',
+      tags: 'google sheets apps script sync push pull pipeline leads devices phone',
       html: `
-        <p>Optional two-way sync of dashboard metrics to a private Google Sheet, via a script you deploy under <strong>your own</strong> Google account — no API keys, nothing sensitive in the public repo.</p>
+        <p>Optional two-way sync to a private Google Sheet — <strong>both your dashboard metrics and your pipeline leads</strong> — via a script you deploy under <strong>your own</strong> Google account. No API keys, nothing sensitive anywhere public. One deployment handles everything.</p>
         <ol>
           <li>Create a sheet at <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a>.</li>
           <li>Extensions → Apps Script → paste in <a href="https://github.com/vaugnstudio-cloud/personal-dashboard/blob/main/apps-script/Code.gs" target="_blank" rel="noopener">Code.gs</a> → save.</li>
           <li>Deploy → New deployment → <strong>Web app</strong> → Execute as <strong>Me</strong> · access <strong>Anyone with the link</strong>.</li>
           <li>Copy the <code>/exec</code> URL → paste into Dashboard Settings → Google Sheets sync.</li>
         </ol>
-        <p>🔒 The URL is the only key. It stays in this browser — never share or publish it. Pipeline sync to Sheets ships in a future update.</p>`,
+        <p><strong>Dashboard:</strong> Push / Pull buttons live in Settings → Google Sheets sync (writes the <em>Dashboard</em> tab).</p>
+        <p><strong>Pipeline:</strong> Push / Pull live in the pipeline's <strong>⋯ menu</strong> (writes the <em>Pipeline</em> tab — one row per lead, every field editable in the sheet).</p>
+        <details><summary>How pipeline Push and Pull behave</summary>
+          <ul>
+            <li><strong>Push</strong> mirrors: the Pipeline tab becomes exactly your current leads.</li>
+            <li><strong>Pull</strong> merges: leads from the sheet win per lead, sheet-only leads are added, local-only leads are kept.</li>
+            <li><strong>New device / phone:</strong> paste the same URL in Dashboard Settings there, then Pull on both pages. Done.</li>
+          </ul>
+        </details>
+        <details><summary>Deployed an older version of the script?</summary>
+          <p>Paste the latest <a href="https://github.com/vaugnstudio-cloud/personal-dashboard/blob/main/apps-script/Code.gs" target="_blank" rel="noopener">Code.gs</a> over your old code, then <strong>Deploy → Manage deployments → ✏ Edit → Version: New version → Deploy</strong>. Your URL stays the same.</p>
+        </details>
+        <p>🔒 The URL is the only key. It stays in this browser — never share or publish it.</p>`,
     },
     {
       id: 'add-leads', group: 'crm', quick: true, title: 'How to Add Leads',
@@ -267,7 +279,7 @@
       html: `
         <details><summary>Is my data public because the site is public?</summary><p>No. The public repo contains only code. Your numbers and leads exist solely in your browser (and optionally your private Google Sheet).</p></details>
         <details><summary>Why do Leads/Clients on the dashboard refuse to be edited?</summary><p>They're auto-synced from the pipeline (see the badge). Turn off <em>Auto-sync from Pipeline</em> in Dashboard Settings to edit manually.</p></details>
-        <details><summary>Can I use this on my phone?</summary><p>Yes — the pipeline becomes a card list on small screens. Data is per-device though: export/import JSON to move it, or wait for pipeline Sheets sync.</p></details>
+        <details><summary>Can I use this on my phone?</summary><p>Yes — the pipeline becomes a card list on small screens. Data is per-device: set up Google Sheets sync once (see the article), then Pull on your phone to get everything.</p></details>
         <details><summary>What's the difference between the Follow Up status and follow-up dates?</summary><p>The date drives the ⚠ Due chip and daily routine — every open lead should have one. The status is a label for leads whose <em>current stage</em> is “circling back later”.</p></details>
         <details><summary>I deleted a lead by mistake.</summary><p>Click <strong>Undo</strong> in the toast within a few seconds. After that, restore from your latest JSON backup.</p></details>
         <details><summary>Can I add custom statuses or fields?</summary><p>Not yet from the UI — it's on the roadmap. (If you're comfortable editing code: <code>assets/js/crm/crm-data.js</code>.)</p></details>`,
@@ -299,7 +311,7 @@
       id: 'roadmap', group: 'ref', quick: false, title: 'Future Features',
       tags: 'roadmap coming soon planned upcoming',
       html: `
-        <p><strong>Next up (v1.5):</strong> per-lead activity timeline view · saved filter views · duplicate detection · CSV export · Google Sheets pipeline sync · deal-aging indicators.</p>
+        <p><strong>Next up (v1.5):</strong> per-lead activity timeline view · saved filter views · duplicate detection · CSV export · deal-aging indicators.</p>
         <p><strong>Then:</strong> kanban board view · outreach template library · pipeline health score · weighted revenue forecasting · browser notifications for due follow-ups · command palette (<kbd>Ctrl</kbd>+<kbd>K</kbd>).</p>
         <p><strong>Integrations horizon:</strong> Google Calendar (call booked → event) · Gmail logging · Apollo/Clay enrichment · Claude-drafted outreach from Problem Noticed + Best Offer · Notion/Zapier bridge.</p>`,
     },

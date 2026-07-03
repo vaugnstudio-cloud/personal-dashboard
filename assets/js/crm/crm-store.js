@@ -157,6 +157,23 @@ const CrmStore = {
     };
   },
 
+  /** Merge leads pulled from Google Sheets: sheet wins per lead id,
+      sheet-only leads are added, local-only leads are kept. */
+  mergeRemote(remoteLeads) {
+    let n = 0;
+    remoteLeads.forEach((r) => {
+      if (!r || !r.id) return;
+      const clean = { ...crmBlankLead(), ...r, id: r.id };
+      if (!Array.isArray(clean.activity)) clean.activity = [];
+      const i = this.state.leads.findIndex((l) => l.id === r.id);
+      if (i > -1) this.state.leads[i] = clean;
+      else this.state.leads.push(clean);
+      n++;
+    });
+    if (n) this.save();
+    return n;
+  },
+
   exportJSON() {
     const blob = new Blob([JSON.stringify(this.state, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
