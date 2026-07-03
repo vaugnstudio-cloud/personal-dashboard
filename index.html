@@ -150,35 +150,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Help Center, help modal & welcome card are injected by assets/js/help.js -->
-
-  <!-- Tour overlay -->
-  <div class="tour" id="tour" hidden>
-    <div class="tour__blocker" id="tourBlocker"></div>
-    <div class="tour__spotlight" id="tourSpotlight"></div>
-    <div class="tour__tip" id="tourTip" role="dialog" aria-live="polite">
-      <button class="tour__x" id="tourClose" aria-label="Exit tutorial">✕</button>
-      <p class="tour__count" id="tourCount"></p>
-      <h3 class="tour__title" id="tourTitle"></h3>
-      <p class="tour__text" id="tourText"></p>
-      <div class="tour__controls">
-        <button class="btn btn--ghost" id="tourExit">Exit</button>
-        <button class="btn" id="tourPrev" hidden>← Previous</button>
-        <button class="btn btn--primary" id="tourNext">Next →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Exit-tour confirmation -->
-  <div class="tour-confirm" id="tourConfirm" hidden role="alertdialog" aria-label="Exit tutorial confirmation">
-    <div class="tour-confirm__card">
-      <p class="tour-confirm__msg">Do you want to exit the tutorial?</p>
-      <div class="btn-row">
-        <button class="btn btn--primary" id="tourConfirmNo">No, continue</button>
-        <button class="btn" id="tourConfirmYes">Yes, exit</button>
-      </div>
-    </div>
-  </div>
+  <!-- Help Center, help modal, welcome card & tour overlay are injected by help.js / tour.js -->
 
   <script src="assets/js/data.js"></script>
   <script src="assets/js/store.js"></script>

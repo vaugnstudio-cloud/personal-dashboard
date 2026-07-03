@@ -1,21 +1,23 @@
 /* ============================================================
    tour.js — spotlight step-by-step tutorial engine
-   Full tour (~12 steps) & Quick tour (~6 steps).
-   Escape asks "Do you want to exit the tutorial?" Yes / No.
+   Page-aware: Dashboard + Sales Pipeline each get Full & Quick
+   tours. Injects its own DOM. Escape asks "Do you want to exit
+   the tutorial?" Yes / No.
    ============================================================ */
 
 (function () {
   'use strict';
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-  const D = () => window.Dashboard;
+  const PAGE = document.body.dataset.page || 'dashboard';
+  const API = () => window.Dashboard || window.CrmUI;   // page UI adapter
 
-  const openDrawerHook = async () => { D().openDrawer(); await wait(420); };
-  const closeDrawerHook = async () => { D().closeDrawer(); await wait(320); };
+  const openDrawerHook = async () => { API().openDrawer(); await wait(420); };
+  const closeDrawerHook = async () => { API().closeDrawer(); await wait(320); };
 
-  /* ── Step definitions ───────────────────────────────────── */
+  /* ── Dashboard steps ────────────────────────────────────── */
 
-  const FULL_STEPS = [
+  const DASH_FULL = [
     {
       target: '.hero__title',
       title: 'Welcome to your dashboard 👋',
@@ -73,7 +75,7 @@
       target: '#drawerSheets',
       title: 'Google Sheets sync (optional)',
       before: openDrawerHook,
-      text: 'Deploy the included script under your own Google account, paste its URL here, then Push / Pull to sync between devices. Step-by-step setup is in the Read Me guide.',
+      text: 'Deploy the included script under your own Google account, paste its URL here, then Push / Pull to sync between devices. Step-by-step setup is in the Help Center.',
     },
     {
       target: '#drawerBackup',
@@ -83,7 +85,7 @@
     },
   ];
 
-  const QUICK_STEPS = [
+  const DASH_QUICK = [
     {
       target: '#heroStats',
       title: 'Welcome 👋',
@@ -119,7 +121,168 @@
     },
   ];
 
+  /* ── Sales Pipeline steps ───────────────────────────────── */
+
+  // If the pipeline is empty, the tour adds a demo lead so every
+  // step has something real to point at — removed when it ends.
+  let demoLeadId = null;
+  const crmOnStart = async () => {
+    if (window.CrmStore && !CrmStore.hasData()) {
+      const lead = CrmStore.create({
+        business: 'Acme Dental (demo)', decisionMaker: 'Dr. Jane Doe',
+        industry: 'Dentistry', country: 'USA', website: 'https://acmedental.com',
+        channel: 'cold-email', status: 'contacted', replied: true,
+        dealValue: 3500, followUpDate: crmToday(),
+        problem: 'Outdated site, no online booking', offer: 'Redesign + booking flow',
+        notes: 'Demo lead — removed automatically when the tour ends.',
+      });
+      demoLeadId = lead.id;
+      await wait(250);
+    }
+  };
+  const crmOnEnd = () => {
+    if (demoLeadId) { CrmStore.remove([demoLeadId]); demoLeadId = null; }
+  };
+  const openLeadHook = async () => { window.CrmUI.openFirstLead(); await wait(450); };
+
+  const CRM_FULL = [
+    {
+      target: '.crm-head',
+      title: 'Welcome to your Sales Pipeline 🧭',
+      text: 'Every lead from every channel — website, cold email, LinkedIn, Instagram, referrals — tracked from first touch to Won. This is the engine of your business; let’s walk it.',
+    },
+    {
+      target: '.crm-stats',
+      title: 'Pipeline health at a glance',
+      text: 'Pipeline Value is what open deals are worth. Due Today drives your morning routine. Win Rate = won ÷ (won + lost). Won This Month is the payoff.',
+    },
+    {
+      target: '#newLeadBtn, #crmFab',
+      title: 'Adding leads',
+      text: 'Click here — or just press N from anywhere. Fill Business Name, Channel and a Follow-Up Date; everything saves automatically as you type.',
+    },
+    {
+      target: '#crmTbody .lead-row, .lead-card',
+      title: 'Every row is an opportunity',
+      text: 'Avatar and name, decision maker, channel, status badge, the R·C·P dots, follow-up date and deal value. Overdue follow-ups turn red so nothing slips.',
+    },
+    {
+      target: '#crmTbody .badge, .lead-card .badge',
+      title: 'Move deals with one click',
+      text: 'Click any status badge → pick the new stage. Marking Won asks (never forces) to add the money to your dashboard; marking Lost asks for a reason so patterns emerge.',
+    },
+    {
+      target: '#crmTbody .rcp, .lead-card .rcp',
+      title: 'R · C · P',
+      text: 'Reply received · Call booked · Proposal sent. Click a dot to toggle it — the status advances automatically when it makes sense.',
+    },
+    {
+      target: '#leadDrawer',
+      title: 'The full record',
+      before: openLeadHook,
+      text: 'Click any row to open all 19 fields — company, contact, problem noticed, best offer, deal, notes and the activity log. Use J / K to flip between leads.',
+    },
+    {
+      target: '.crm-search',
+      title: 'Find anything instantly',
+      before: closeDrawerHook,
+      text: 'Press / and type — searches names, contacts, emails, industries, countries and notes at once.',
+    },
+    {
+      target: '#crmChips',
+      title: 'Your daily routine lives here',
+      text: 'One click filters by stage. The ⚠ Due chip is the important one: open it every morning and clear your follow-ups. Archived leads hide here too.',
+    },
+    {
+      target: '#colBtn',
+      title: 'Your table, your columns',
+      text: 'Show or hide any of the 19 columns — email, country, problem noticed, best offer and more. Your layout is remembered.',
+    },
+    {
+      target: '#moreBtn',
+      title: 'Protect your pipeline 💾',
+      text: 'Export a JSON backup monthly from this menu (Import restores it anywhere). The Help button has the full Sales, Follow-Up and Proposal SOPs. That’s the tour — go win something!',
+    },
+  ];
+
+  const CRM_QUICK = [
+    {
+      target: '.crm-stats',
+      title: 'Welcome to your pipeline 🧭',
+      text: 'Pipeline Value, follow-ups Due Today, open leads, Win Rate and Won This Month — all computed live from your leads.',
+    },
+    {
+      target: '#newLeadBtn, #crmFab',
+      title: 'Adding leads',
+      text: 'Press N anytime. Business Name + Channel + Follow-Up Date is enough to start — everything saves as you type.',
+    },
+    {
+      target: '#crmTbody .lead-row, .lead-card',
+      title: 'Every row is an opportunity',
+      text: 'Click a row for the full 19-field record. Click the status badge to move it through the stages — Won asks before touching your dashboard money.',
+    },
+    {
+      target: '#crmTbody .rcp, .lead-card .rcp',
+      title: 'R · C · P dots',
+      text: 'Reply · Call · Proposal — click to toggle; statuses advance automatically.',
+    },
+    {
+      target: '#crmChips',
+      title: 'The ⚠ Due chip is your morning',
+      text: 'Open it daily, clear every follow-up, set the next dates. That habit is the whole sales system.',
+    },
+    {
+      target: '#moreBtn',
+      title: 'One habit: backup 💾',
+      text: 'Export a JSON backup monthly from this menu. Full SOPs live under Help. Done — go add a real lead!',
+    },
+  ];
+
+  const TOURS = {
+    dashboard: { full: DASH_FULL, quick: DASH_QUICK, welcomeKey: 'vaugn.dashboard.welcomed' },
+    crm:       { full: CRM_FULL,  quick: CRM_QUICK,  welcomeKey: 'vaugn.crm.welcomed', onStart: crmOnStart, onEnd: crmOnEnd },
+  };
+
+  /* ── Injected DOM (identical IDs on every page) ─────────── */
+
+  const host = document.createElement('div');
+  host.innerHTML = `
+    <div class="tour" id="tour" hidden>
+      <div class="tour__blocker" id="tourBlocker"></div>
+      <div class="tour__spotlight" id="tourSpotlight"></div>
+      <div class="tour__tip" id="tourTip" role="dialog" aria-live="polite">
+        <button class="tour__x" id="tourClose" aria-label="Exit tutorial">✕</button>
+        <p class="tour__count" id="tourCount"></p>
+        <h3 class="tour__title" id="tourTitle"></h3>
+        <p class="tour__text" id="tourText"></p>
+        <div class="tour__controls">
+          <button class="btn btn--ghost" id="tourExit">Exit</button>
+          <button class="btn" id="tourPrev" hidden>← Previous</button>
+          <button class="btn btn--primary" id="tourNext">Next →</button>
+        </div>
+      </div>
+    </div>
+    <div class="tour-confirm" id="tourConfirm" hidden role="alertdialog" aria-label="Exit tutorial confirmation">
+      <div class="tour-confirm__card">
+        <p class="tour-confirm__msg">Do you want to exit the tutorial?</p>
+        <div class="btn-row">
+          <button class="btn btn--primary" id="tourConfirmNo">No, continue</button>
+          <button class="btn" id="tourConfirmYes">Yes, exit</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(host);
+
   /* ── Engine ─────────────────────────────────────────────── */
+
+  /** First visible element matching a (possibly comma-separated) selector. */
+  function findTarget(sel) {
+    for (const el of document.querySelectorAll(sel)) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) return el;
+    }
+    return null;
+  }
 
   const Tour = {
     active: false,
@@ -186,18 +349,22 @@
 
     async start(variant) {
       if (this.active) return;
+      const cfg = TOURS[PAGE];
+      if (!cfg || !API()) return;
       if (!this._bound) { this.bind(); this._bound = true; }
       if (window.HelpUI) HelpUI.closeAll();
-      this.steps = variant === 'quick' ? QUICK_STEPS : FULL_STEPS;
+      this.steps = variant === 'quick' ? cfg.quick : cfg.full;
       this.active = true;
       this._dir = 1;
       const e = this.els();
       e.overlay.hidden = false;
       e.confirm.hidden = true;
-      document.addEventListener('keydown', this._onKey, true); // capture: beats drawer's Escape
+      document.addEventListener('keydown', this._onKey, true); // capture: beats page Escape handlers
       document.addEventListener('scroll', this._onMove, true);
       window.addEventListener('resize', this._onMove);
       document.addEventListener('store:changed', this._onStore);
+      document.addEventListener('crm:changed', this._onMove);
+      if (cfg.onStart) await cfg.onStart();
       await this.show(0);
     },
 
@@ -206,9 +373,9 @@
       this._celebrated = false;
       const step = this.steps[i];
       if (step.before) await step.before();
-      let el = document.querySelector(step.target);
+      let el = findTarget(step.target);
       // Skip steps whose target is hidden at this viewport (e.g. the ring on mobile)
-      if (!el || el.getBoundingClientRect().width === 0) {
+      if (!el) {
         const ni = i + (this._dir >= 0 ? 1 : -1);
         if (ni < 0 || ni >= this.steps.length) return this.end(false);
         return this.show(ni);
@@ -231,7 +398,7 @@
 
     reposition() {
       if (!this.active || !this._currentTarget) return;
-      const el = document.querySelector(this._currentTarget);
+      const el = findTarget(this._currentTarget);
       if (!el) return;
       const e = this.els();
       const r = el.getBoundingClientRect();
@@ -272,6 +439,7 @@
 
     end(finished) {
       this.active = false;
+      const cfg = TOURS[PAGE];
       const e = this.els();
       e.overlay.hidden = true;
       e.confirm.hidden = true;
@@ -279,10 +447,12 @@
       document.removeEventListener('scroll', this._onMove, true);
       window.removeEventListener('resize', this._onMove);
       document.removeEventListener('store:changed', this._onStore);
-      D().closeDrawer();
-      try { localStorage.setItem('vaugn.dashboard.welcomed', '1'); } catch (err) { /* ignore */ }
-      D().toast(finished
-        ? 'You’re all set 🎉 Your dashboard is ready.'
+      document.removeEventListener('crm:changed', this._onMove);
+      if (API()) API().closeDrawer();
+      if (cfg && cfg.onEnd) cfg.onEnd();
+      try { localStorage.setItem(cfg.welcomeKey, '1'); } catch (err) { /* ignore */ }
+      API().toast(finished
+        ? (PAGE === 'crm' ? 'You’re all set 🧭 Go add your first real lead.' : 'You’re all set 🎉 Your dashboard is ready.')
         : 'Tutorial closed — reopen it anytime from Help.');
     },
   };

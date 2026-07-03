@@ -575,6 +575,14 @@
     else if ((e.key === 'k' || e.key === 'K') && ui.drawerId) drawerNav(-1);
   });
 
+  /* ── Public API (used by tour.js) ───────────────────────── */
+
+  function openFirstLead() {
+    const first = filtered()[0];
+    if (first) openDrawer(first.id);
+  }
+  window.CrmUI = { openDrawer: openFirstLead, closeDrawer, toast, openFirstLead };
+
   /* ── Boot ───────────────────────────────────────────────── */
 
   document.addEventListener('crm:changed', renderAll);

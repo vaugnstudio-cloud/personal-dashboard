@@ -8,8 +8,12 @@
 (function () {
   'use strict';
 
-  const WELCOME_KEY = 'vaugn.dashboard.welcomed';
   const PAGE = document.body.dataset.page || 'dashboard';
+  const WELCOME_KEY = PAGE === 'crm' ? 'vaugn.crm.welcomed' : 'vaugn.dashboard.welcomed';
+  const WELCOME = PAGE === 'crm'
+    ? { title: 'Welcome to your Sales Pipeline 🧭', sub: 'Every lead — from first touch to Won — tracked in one place. Want a walkthrough first?' }
+    : { title: 'Welcome to your dashboard 👋', sub: 'Track your money, business, content and health — all in one place. Want a quick walkthrough first?' };
+  const TOUR_FULL_DESC = PAGE === 'crm' ? '~2 min · every feature, incl. the lead drawer' : '~2 min · every feature, incl. Settings &amp; sync';
   const $ = (sel) => document.querySelector(sel);
 
   /* ══════════════════════ DOCS CONTENT ═════════════════════ */
@@ -295,7 +299,7 @@
       id: 'roadmap', group: 'ref', quick: false, title: 'Future Features',
       tags: 'roadmap coming soon planned upcoming',
       html: `
-        <p><strong>Next up (v1.5):</strong> per-lead activity timeline view · saved filter views · duplicate detection · CSV export · Google Sheets pipeline sync · guided pipeline tour · deal-aging indicators.</p>
+        <p><strong>Next up (v1.5):</strong> per-lead activity timeline view · saved filter views · duplicate detection · CSV export · Google Sheets pipeline sync · deal-aging indicators.</p>
         <p><strong>Then:</strong> kanban board view · outreach template library · pipeline health score · weighted revenue forecasting · browser notifications for due follow-ups · command palette (<kbd>Ctrl</kbd>+<kbd>K</kbd>).</p>
         <p><strong>Integrations horizon:</strong> Google Calendar (call booked → event) · Gmail logging · Apollo/Clay enrichment · Claude-drafted outreach from Problem Noticed + Best Offer · Notion/Zapier bridge.</p>`,
     },
@@ -329,12 +333,12 @@
         </div>
         <div id="helpTourPick" hidden>
           <h2 class="modal__title">Choose your tour</h2>
-          <p class="modal__sub">Both are interactive — you'll even edit a real value.</p>
+          <p class="modal__sub">${PAGE === 'crm' ? 'A guided walk through your pipeline, step by step.' : "Both are interactive — you'll even edit a real value."}</p>
           <div class="help-options">
             <button class="help-option" data-tour="full">
               <span class="help-option__emoji">🧭</span>
               <span class="help-option__name">Full tour</span>
-              <span class="help-option__desc">~2 min · every feature, incl. Settings &amp; sync</span>
+              <span class="help-option__desc">${TOUR_FULL_DESC}</span>
             </button>
             <button class="help-option" data-tour="quick">
               <span class="help-option__emoji">⚡</span>
@@ -350,8 +354,8 @@
     <div class="modal" id="welcomeModal" hidden role="dialog" aria-modal="true" aria-label="Welcome">
       <div class="modal__card modal__card--welcome">
         <span class="modal__mark">V</span>
-        <h2 class="modal__title">Welcome to your dashboard 👋</h2>
-        <p class="modal__sub">Track your money, business, content and health — all in one place. Want a quick walkthrough first?</p>
+        <h2 class="modal__title">${WELCOME.title}</h2>
+        <p class="modal__sub">${WELCOME.sub}</p>
         <div class="btn-row btn-row--stack">
           <button class="btn btn--primary" data-tour="full">🧭 Full tour (~2 min)</button>
           <button class="btn" data-tour="quick">⚡ Quick tour (~1 min)</button>
@@ -436,7 +440,6 @@
 
   const HelpUI = {
     open() {
-      if (PAGE === 'crm') return this.openCenter();
       this.closeAll();
       $('#helpModal').hidden = false;
       $('#helpChooser').hidden = false;
@@ -464,7 +467,6 @@
     },
     markWelcomed() { try { localStorage.setItem(WELCOME_KEY, '1'); } catch (e) { /* ignore */ } },
     maybeShowWelcome() {
-      if (PAGE !== 'dashboard') return;
       let seen = null;
       try { seen = localStorage.getItem(WELCOME_KEY); } catch (e) { /* ignore */ }
       if (!seen) $('#welcomeModal').hidden = false;
@@ -482,7 +484,6 @@
 
   on('#helpReadMe', 'click', () => HelpUI.openCenter());
   on('#helpGuideMe', 'click', () => {
-    if (PAGE !== 'dashboard') { HelpUI.openCenter(); return; }
     $('#helpChooser').hidden = true;
     $('#helpTourPick').hidden = false;
   });
