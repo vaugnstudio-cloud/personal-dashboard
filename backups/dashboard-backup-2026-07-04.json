@@ -1,0 +1,87 @@
+{
+  "metrics": {
+    "salary": {
+      "value": 0,
+      "goal": 5000
+    },
+    "sideIncome": {
+      "value": 0,
+      "goal": 2000
+    },
+    "savings": {
+      "value": 0,
+      "goal": 20000
+    },
+    "expenses": {
+      "value": 0,
+      "goal": 1500
+    },
+    "emergencyFund": {
+      "value": 0,
+      "goal": 10000
+    },
+    "mrr": {
+      "value": 500,
+      "goal": 3000
+    },
+    "clients": {
+      "value": 0,
+      "goal": 5
+    },
+    "leads": {
+      "value": 1,
+      "goal": 20
+    },
+    "retainers": {
+      "value": 0,
+      "goal": 2500
+    },
+    "websiteIncome": {
+      "value": 0,
+      "goal": 1000
+    },
+    "affiliateIncome": {
+      "value": 0,
+      "goal": 500
+    },
+    "products": {
+      "value": 0,
+      "goal": 3
+    },
+    "templatesSold": {
+      "value": 0,
+      "goal": 50
+    },
+    "subscribers": {
+      "value": 0,
+      "goal": 1000
+    },
+    "views": {
+      "value": 0,
+      "goal": 100000
+    },
+    "watchHours": {
+      "value": 0,
+      "goal": 4000
+    },
+    "weight": {
+      "value": 0,
+      "goal": 160
+    },
+    "hoursLearned": {
+      "value": 0,
+      "goal": 100
+    },
+    "hoursWorked": {
+      "value": 0,
+      "goal": 160
+    }
+  },
+  "settings": {
+    "currency": "USD",
+    "weightUnit": "lbs",
+    "sheetsUrl": "",
+    "ownerName": ""
+  },
+  "updatedAt": "2026-07-04T11:47:14.848Z"
+}

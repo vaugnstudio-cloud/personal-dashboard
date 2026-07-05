@@ -403,6 +403,25 @@
     input.addEventListener('click', (e) => e.stopPropagation());
   }
 
+  /* ── Clickable stats bar (stats are navigation) ─────────── */
+
+  document.querySelector('.crm-stats').addEventListener('click', (e) => {
+    const stat = e.target.closest('[data-stat]');
+    if (!stat) return;
+    ui.selection.clear();
+    switch (stat.dataset.stat) {
+      case 'due': ui.status = 'due'; break;
+      case 'open': ui.status = 'all'; ui.channel = 'all'; ui.q = ''; $('#crmSearch').value = ''; break;
+      case 'win': case 'wonmonth': ui.status = 'won'; break;
+      case 'pipeline': ui.status = 'all'; CrmStore.setView({ sortBy: 'dealValue', sortDir: 'desc' }); break;
+    }
+    renderAll();
+    document.querySelector('.crm-toolbar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.querySelector('.crm-stats').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') e.target.closest('[data-stat]')?.click();
+  });
+
   /* ── Toolbar ────────────────────────────────────────────── */
 
   $('#crmChips').addEventListener('click', (e) => {

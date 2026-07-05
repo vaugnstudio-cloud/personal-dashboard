@@ -1,0 +1,64 @@
+========================================
+  STUDIO OS — START HERE
+  Your business, one beautiful page.
+========================================
+
+Thank you for your purchase! Here's everything you need in 2 minutes.
+
+
+▶ RUN IT (no install)
+---------------------
+Just double-click  index.html  — it opens in your browser and works
+completely offline. That's the whole "install."
+
+First time? Click "Explore with sample data" to see everything filled
+in, then clear it and add your own.
+
+
+▶ THE THREE TABS
+----------------
+• Dashboard      — 19 metrics with goals & progress
+• Sales Pipeline — a full CRM for every lead
+• Reports        — charts + a built-in advisor that tells you what to fix
+
+Press the "?" key anytime for keyboard shortcuts, or click Help
+(top-right) for the full guide and a guided tour.
+
+
+▶ IMPORTANT: BACK UP YOUR DATA
+------------------------------
+Everything is stored privately in YOUR browser. That means it's yours
+alone — but clearing your browser erases it. Once a month:
+
+  Settings → Backup → export the two JSON files.
+
+Or set up free Google Sheets sync (Settings → Google Sheets sync) for
+automatic backup + phone access. Full steps in Help.
+
+
+▶ MAKE IT YOURS
+---------------
+Settings → Appearance:
+  • Pick a theme (Midnight / Crème / Ink & Gold)
+  • Set your company name + tagline
+  • Upload your logo (with a crop tool)
+
+
+▶ PUT IT ONLINE (optional, ~5 min, free)
+----------------------------------------
+Want your own private URL you can open from any device?
+  1. Go to netlify.com (free account)
+  2. Drag this whole folder onto the "deploy" area
+  3. You get a live link instantly. Bookmark it.
+(Your data still stays private in each browser you use it on.)
+
+
+▶ LICENSE
+---------
+Personal / single-business use. Please don't resell or redistribute
+the code. Full terms in LICENSE.md. You CAN set it up for your own
+clients as part of your services.
+
+
+Questions? Reply to your purchase receipt.
+Enjoy running your business on one page. 🚀

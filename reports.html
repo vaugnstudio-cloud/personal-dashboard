@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports — Vaugn Studio</title>
+  <meta name="description" content="Reports & insights — charts, funnel and a built-in business advisor." />
+  <meta name="color-scheme" content="dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; manifest-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="theme-color" content="#0a0c10" />
+  <script>try { var _t = JSON.parse(localStorage.getItem("vaugn.dashboard.v1")).settings.theme; if (_t && _t !== "midnight") document.documentElement.dataset.theme = _t; } catch (e) {}</script>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text x='50' y='68' font-size='52' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230a0c10'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body data-page="reports">
+  <div class="shell shell--wide">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark">V</span>
+        <span>
+          Vaugn Studio
+          <span class="brand__sub">Personal Dashboard</span>
+        </span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a class="nav__link" href="index.html">Dashboard</a>
+        <a class="nav__link" href="crm.html">Sales Pipeline</a>
+        <a class="nav__link is-active" href="reports.html" aria-current="page">Reports</a>
+      </nav>
+      <div class="topbar__actions">
+        <button class="icon-btn" id="helpBtn" aria-label="Open help center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          Help
+        </button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Page head -->
+    <div class="crm-head">
+      <div>
+        <h1 class="crm-title">Reports &amp; <em>Insights</em></h1>
+        <p class="crm-sub">Your numbers, explained — computed privately on this device.</p>
+      </div>
+      <div class="rpt-actions">
+        <button class="btn" id="rptCopy">Copy as text</button>
+        <button class="btn btn--primary" id="rptPrint">📄 Print / Save PDF</button>
+      </div>
+    </div>
+
+    <!-- Period picker -->
+    <div class="crm-toolbar rpt-toolbar">
+      <div class="crm-chips" id="rptPeriods" aria-label="Report period"></div>
+    </div>
+
+    <!-- Insights -->
+    <section class="rpt-section">
+      <header class="section__head">
+        <span class="section__tag">📌</span>
+        <div>
+          <h2 class="section__title">What to do next</h2>
+          <p class="section__blurb" id="insightCount"></p>
+        </div>
+      </header>
+      <div class="rpt-insights" id="rptInsights"></div>
+    </section>
+
+    <!-- Charts -->
+    <section class="rpt-section">
+      <div class="rpt-card" id="cardRevenue">
+        <h2 class="rpt-card__title">💰 Revenue</h2>
+        <p class="rpt-card__head" id="chartRevenueHead"></p>
+        <div id="chartRevenue"></div>
+      </div>
+
+      <div class="rpt-grid">
+        <div class="rpt-card" id="cardFunnel">
+          <h2 class="rpt-card__title">🔻 Pipeline funnel</h2>
+          <p class="rpt-card__head" id="chartFunnelHead"></p>
+          <div id="chartFunnel"></div>
+        </div>
+        <div class="rpt-card" id="cardChannel">
+          <h2 class="rpt-card__title">🎯 Channel performance</h2>
+          <p class="rpt-card__head" id="chartChannelHead"></p>
+          <div id="chartChannel"></div>
+        </div>
+      </div>
+
+      <div class="rpt-card" id="cardTrend">
+        <h2 class="rpt-card__title">📈 Trends</h2>
+        <p class="rpt-card__head" id="chartTrendHead"></p>
+        <div id="chartTrend"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Insights are rule-based and computed locally — your data never leaves this browser</span>
+      <span>Reports · Vaugn Studio</span>
+    </footer>
+  </div>
+
+  <!-- Generated report (print target) -->
+  <div id="reportView" class="report-view" aria-hidden="true"></div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/sheets-sync.js"></script>
+  <script src="assets/js/crm/crm-data.js"></script>
+  <script src="assets/js/crm/crm-store.js"></script>
+  <script src="assets/js/crm/crm-table.js"></script>
+  <script src="assets/js/history.js"></script>
+  <script src="assets/js/settings.js"></script>
+  <script src="assets/js/reports/charts.js"></script>
+  <script src="assets/js/reports/insights.js"></script>
+  <script src="assets/js/reports/reports-app.js"></script>
+  <script src="assets/js/tour.js"></script>
+  <script src="assets/js/help.js"></script>
+  <script src="assets/js/sample-data.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

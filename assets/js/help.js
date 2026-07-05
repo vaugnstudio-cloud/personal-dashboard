@@ -9,11 +9,22 @@
   'use strict';
 
   const PAGE = document.body.dataset.page || 'dashboard';
-  const WELCOME_KEY = PAGE === 'crm' ? 'vaugn.crm.welcomed' : 'vaugn.dashboard.welcomed';
-  const WELCOME = PAGE === 'crm'
-    ? { title: 'Welcome to your Sales Pipeline 🧭', sub: 'Every lead — from first touch to Won — tracked in one place. Want a walkthrough first?' }
-    : { title: 'Welcome to your dashboard 👋', sub: 'Track your money, business, content and health — all in one place. Want a quick walkthrough first?' };
-  const TOUR_FULL_DESC = PAGE === 'crm' ? '~2 min · every feature, incl. the lead drawer' : '~2 min · every feature, incl. Settings &amp; sync';
+  const WELCOME_KEYS = {
+    dashboard: 'vaugn.dashboard.welcomed',
+    crm: 'vaugn.crm.welcomed',
+    reports: 'vaugn.reports.welcomed',
+  };
+  const WELCOME_KEY = WELCOME_KEYS[PAGE] || WELCOME_KEYS.dashboard;
+  const WELCOME = {
+    crm: { title: 'Welcome to your Sales Pipeline 🧭', sub: 'Every lead — from first touch to Won — tracked in one place. Want a walkthrough first?' },
+    reports: { title: 'Your numbers, explained 📈', sub: 'Charts, your funnel, and a private advisor that tells you what to fix next. Want the quick walkthrough?' },
+    dashboard: { title: 'Welcome to your dashboard 👋', sub: 'Track your money, business, content and health — all in one place. Want a quick walkthrough first?' },
+  }[PAGE] || { title: 'Welcome 👋', sub: 'Want a quick walkthrough?' };
+  const TOUR_FULL_DESC = {
+    crm: '~2 min · every feature, incl. the lead drawer',
+    reports: '~1.5 min · insights, every chart &amp; the report',
+    dashboard: '~2 min · every feature, incl. Settings &amp; sync',
+  }[PAGE] || '~2 min';
   const $ = (sel) => document.querySelector(sel);
 
   /* ══════════════════════ DOCS CONTENT ═════════════════════ */
@@ -22,6 +33,7 @@
     { id: 'start',     label: 'Start Here' },
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'crm',       label: 'Sales Pipeline' },
+    { id: 'reports',   label: 'Reports' },
     { id: 'sop',       label: 'SOPs & Playbooks' },
     { id: 'ref',       label: 'Reference' },
   ];
@@ -31,11 +43,12 @@
       id: 'quick-start', group: 'start', quick: true, title: 'Quick Start',
       tags: 'begin overview 5 minute intro',
       html: `
-        <p><strong>Your Business OS in 60 seconds:</strong></p>
+        <p><strong>Your Personal Dashboard in 60 seconds:</strong></p>
         <ol>
           <li><strong>Dashboard</strong> tracks 19 life &amp; business metrics. Click any number → type → <kbd>Enter</kbd>. Saved instantly.</li>
           <li><strong>Sales Pipeline</strong> tracks every lead. Press <kbd>N</kbd> to add one, click a row to open its full record.</li>
           <li>The two stay in sync: <em>Leads</em> and <em>Active Clients</em> on the dashboard update automatically from the pipeline, and winning a deal offers to update your income metrics.</li>
+          <li><strong>Reports</strong> reads it all and tells you what to do next — charts, funnel and personalized tips, computed privately on this device.</li>
           <li>Everything lives in <strong>this browser</strong> — private and offline. Export a JSON backup monthly (Settings → Backup / Pipeline → ⋯ menu).</li>
         </ol>
         <p>That's genuinely all you need. The rest of this Help Center is depth, not requirement.</p>`,
@@ -58,6 +71,21 @@
         <p>Data is per-browser. To use another device, export/import JSON or set up Google Sheets sync (see Dashboard → Google Sheets Sync).</p>`,
     },
     {
+      id: 'appearance', group: 'start', quick: true, title: 'Make It Yours — Themes & Branding',
+      tags: 'theme dark light creme ink gold color logo brand name white label personalize appearance',
+      html: `
+        <p>Open <strong>Settings → Appearance</strong> (the gear icon, on every page):</p>
+        <p><strong>🎨 Themes — three, curated:</strong></p>
+        <ul>
+          <li><strong>Midnight</strong> — the signature dark look. Violet-to-cyan, quiet and focused.</li>
+          <li><strong>Crème</strong> — warm paper light. Easy on the eyes in bright rooms; everything re-tuned for readability.</li>
+          <li><strong>Ink &amp; Gold</strong> ★ — deep navy with a gold-to-sky gradient. The premium one.</li>
+        </ul>
+        <p>Your choice is remembered on this device and applies everywhere — charts, badges, reports included.</p>
+        <p><strong>🎭 Branding:</strong> change the <em>app name</em> and <em>tagline</em> shown in the top bar, and upload your own <em>logo</em>. When you pick an image, a quick crop dialog opens — <em>drag to position, slide to zoom</em> — so it always locks to a clean square. The logo is stored only in this browser and also becomes the tab icon. One click resets to the default mark.</p>
+        <p>Everything here is cosmetic and instant — no data is affected.</p>`,
+    },
+    {
       id: 'dashboard-basics', group: 'dashboard', quick: true, title: 'Dashboard Basics',
       tags: 'metrics cards goals progress ring hero edit values',
       html: `
@@ -74,12 +102,15 @@
       id: 'data-backups', group: 'dashboard', quick: true, title: 'Where Data Lives & Backups',
       tags: 'localstorage save export import json lost data restore',
       html: `
-        <p>All data is stored in your browser's <strong>localStorage</strong> — private, offline, never uploaded. Consequences:</p>
+        <p>⚠️ <strong>Read this once — it's the single most important thing to know.</strong></p>
+        <p>All your data is stored in your browser's <strong>localStorage</strong> — private, offline, never uploaded. That privacy has one trade-off you must respect:</p>
         <ul>
-          <li>Each browser/device starts empty until you enter numbers or import.</li>
-          <li>Clearing browser data erases it. <strong>Backups are your safety net.</strong></li>
+          <li>Each browser/device starts empty until you enter numbers or import a backup.</li>
+          <li><strong>Clearing your browser history/data erases everything.</strong> So can uninstalling the browser or some "cleaner" tools.</li>
+          <li>Your phone and laptop are separate unless you sync them.</li>
         </ul>
-        <p><strong>Monthly habit:</strong> Dashboard → Settings → Backup → <em>Export JSON</em>, and Pipeline → <strong>⋯</strong> menu → <em>Export JSON backup</em>. Two files, into OneDrive, done.</p>
+        <p><strong>👉 The habit that protects you:</strong> once a month, open <strong>Settings → Backup</strong> and export both JSON files into a safe folder (OneDrive, Google Drive, wherever). Vaugn Studio will also nudge you with a reminder if it's been a while.</p>
+        <p><strong>Even better — sync:</strong> set up Google Sheets sync (Settings → Google Sheets sync) for automatic two-way backup that also lets you use your phone. See that Help article.</p>
         <p>Restore or move devices anytime with the matching <em>Import</em> buttons.</p>`,
     },
     {
@@ -89,7 +120,7 @@
         <p>Optional two-way sync to a private Google Sheet — <strong>both your dashboard metrics and your pipeline leads</strong> — via a script you deploy under <strong>your own</strong> Google account. No API keys, nothing sensitive anywhere public. One deployment handles everything.</p>
         <ol>
           <li>Create a sheet at <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a>.</li>
-          <li>Extensions → Apps Script → paste in <a href="https://github.com/vaugnstudio-cloud/personal-dashboard/blob/main/apps-script/Code.gs" target="_blank" rel="noopener">Code.gs</a> → save.</li>
+          <li>Extensions → Apps Script → paste in the contents of <code>apps-script/Code.gs</code> (included in your download) → save.</li>
           <li>Deploy → New deployment → <strong>Web app</strong> → Execute as <strong>Me</strong> · access <strong>Anyone with the link</strong>.</li>
           <li>Copy the <code>/exec</code> URL → paste into Dashboard Settings → Google Sheets sync.</li>
         </ol>
@@ -103,7 +134,7 @@
           </ul>
         </details>
         <details><summary>Deployed an older version of the script?</summary>
-          <p>Paste the latest <a href="https://github.com/vaugnstudio-cloud/personal-dashboard/blob/main/apps-script/Code.gs" target="_blank" rel="noopener">Code.gs</a> over your old code, then <strong>Deploy → Manage deployments → ✏ Edit → Version: New version → Deploy</strong>. Your URL stays the same.</p>
+          <p>Paste the latest <code>apps-script/Code.gs</code> (from your download) over your old code, then <strong>Deploy → Manage deployments → ✏ Edit → Version: New version → Deploy</strong>. Your URL stays the same.</p>
         </details>
         <p>🔒 The URL is the only key. It stays in this browser — never share or publish it.</p>`,
     },
@@ -274,9 +305,30 @@
         </ul>`,
     },
     {
+      id: 'reports-insights', group: 'reports', quick: true, title: 'Reports & Insights',
+      tags: 'reports charts graphs insights tips ai advisor funnel revenue trends print pdf',
+      html: `
+        <p>The <strong>Reports</strong> tab turns your data into answers. It's organized top-down: <em>what to do</em>, then <em>the evidence</em>.</p>
+        <p><strong>📌 What to do next</strong> — a built-in advisor that reads your real pipeline and dashboard numbers and writes specific tips: overdue follow-ups, whether your pipeline can reach your income goal, which channel closes best, expense ratio, savings runway and more. Colored by urgency: red = act, amber = watch, green = win. Click a tip to jump to the fix.</p>
+        <details><summary>How are insights computed? (transparency)</summary>
+          <p>Pure rules, running locally — for example: <em>pipeline needed = income goal gap ÷ your win rate</em>, or <em>runway = savings ÷ monthly expenses</em>. No AI service, no network, nothing uploaded. Your numbers never leave this browser.</p>
+        </details>
+        <p><strong>The charts:</strong></p>
+        <ul>
+          <li><strong>💰 Revenue</strong> — deal value won per week/month for the selected period.</li>
+          <li><strong>🔻 Pipeline funnel</strong> — where leads drop between Lead → Contacted → Replied → Call → Proposal → Won.</li>
+          <li><strong>🎯 Channel performance</strong> — win rate and revenue per outreach channel. Double down on the winner.</li>
+          <li><strong>📈 Trends</strong> — MRR and pipeline value over time. Unlocks automatically after 7 days of use (Vaugn Studio snapshots your numbers once a day, locally).</li>
+        </ul>
+        <p><strong>📄 Print / Save PDF</strong> generates a clean one-page business report — stats, tips, charts, wins &amp; losses — great as a weekly review ritual. <strong>Copy as text</strong> gives you the same as plain text for notes or messages.</p>
+        <p>The period picker (This month · Last month · Quarter · All time) drives every chart; insights always describe <em>right now</em>.</p>`,
+    },
+    {
       id: 'faq', group: 'ref', quick: false, title: 'FAQ',
       tags: 'questions answers common',
       html: `
+        <details><summary>Can I install Vaugn Studio like a real app?</summary><p>Yes — it's a PWA. In Chrome/Edge: menu → <strong>Install Vaugn Studio</strong> (or the install icon in the address bar). On iPhone: Share → <strong>Add to Home Screen</strong>. It opens in its own window and works fully offline.</p></details>
+        <details><summary>What is sample data? Is it safe with my real data?</summary><p>A realistic demo dataset (12 leads, filled metrics, 30 days of history) you can enter anytime from <strong>Settings → Sample data</strong>. It's a sandbox: your real data is <em>stashed safely first</em> and restored exactly as it was when you exit. Anything you change inside sample mode is discarded — re-entering always shows the same pristine demo.</p></details>
         <details><summary>Is my data public because the site is public?</summary><p>No. The public repo contains only code. Your numbers and leads exist solely in your browser (and optionally your private Google Sheet).</p></details>
         <details><summary>Why do Leads/Clients on the dashboard refuse to be edited?</summary><p>They're auto-synced from the pipeline (see the badge). Turn off <em>Auto-sync from Pipeline</em> in Dashboard Settings to edit manually.</p></details>
         <details><summary>Can I use this on my phone?</summary><p>Yes — the pipeline becomes a card list on small screens. Data is per-device: set up Google Sheets sync once (see the article), then Pull on your phone to get everything.</p></details>
@@ -538,7 +590,14 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape' || (window.Tour && Tour.active)) return;
+    if (window.Tour && Tour.active) return;
+    // `?` opens the keyboard shortcuts article (discoverability)
+    if (e.key === '?' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !HelpUI.anyOpen()) {
+      e.preventDefault();
+      HelpUI.openCenter('shortcuts');
+      return;
+    }
+    if (e.key !== 'Escape') return;
     if (HelpUI.anyOpen()) {
       if (!$('#welcomeModal').hidden) HelpUI.markWelcomed();
       HelpUI.closeAll();

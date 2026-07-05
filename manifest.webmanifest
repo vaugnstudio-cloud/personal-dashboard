@@ -1,0 +1,24 @@
+{
+  "name": "Vaugn Studio — Business Operating System",
+  "short_name": "Vaugn Studio",
+  "description": "Dashboard, sales pipeline and reports for one-person businesses. Private, offline, yours.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

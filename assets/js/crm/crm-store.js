@@ -138,7 +138,11 @@ const CrmStore = {
       if (l.status === 'won') {
         won++;
         if (!l.archived) activeClients++;
-        if (l.wonAt && l.wonAt.slice(0, 7) === month) wonThisMonth += l.dealValue || 0;
+        if (l.wonAt) {
+          const wd = new Date(l.wonAt);
+          const wonMonth = `${wd.getFullYear()}-${String(wd.getMonth() + 1).padStart(2, '0')}`;
+          if (wonMonth === month) wonThisMonth += l.dealValue || 0;
+        }
         return;
       }
       if (l.status === 'lost') { lost++; return; }

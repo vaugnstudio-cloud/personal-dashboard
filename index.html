@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vaugn — Personal Dashboard</title>
+  <title>Vaugn Studio — Dashboard</title>
   <meta name="description" content="Personal metrics dashboard — finance, business, content & health, tracked in one place." />
   <meta name="color-scheme" content="dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; manifest-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="theme-color" content="#0a0c10" />
+  <script>try { var _t = JSON.parse(localStorage.getItem("vaugn.dashboard.v1")).settings.theme; if (_t && _t !== "midnight") document.documentElement.dataset.theme = _t; } catch (e) {}</script>
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text x='50' y='68' font-size='52' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230a0c10'>V</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,6 +31,7 @@
       <nav class="nav" aria-label="Main">
         <a class="nav__link is-active" href="index.html" aria-current="page">Dashboard</a>
         <a class="nav__link" href="crm.html">Sales Pipeline</a>
+        <a class="nav__link" href="reports.html">Reports</a>
       </nav>
       <div class="topbar__actions">
       <button class="icon-btn" id="helpBtn" aria-label="How to use this dashboard">
@@ -64,6 +69,8 @@
 
     <div class="hero-stats" id="heroStats" aria-label="Headline stats"></div>
 
+    <div id="checklist"></div>
+
     <!-- Pipeline summary strip (renders only when the CRM has data) -->
     <div id="pipeStrip"></div>
 
@@ -72,81 +79,11 @@
 
     <footer class="footer">
       <span>Data lives in your browser · optional Google Sheets sync in Settings</span>
-      <span>Designed &amp; tracked by Vaugn Studio</span>
+      <span>Vaugn Studio — your business, one page</span>
     </footer>
   </div>
 
-  <!-- Settings drawer -->
-  <div class="scrim" id="scrim"></div>
-  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Settings">
-    <div class="drawer__head">
-      <h2 class="drawer__title">Settings</h2>
-      <button class="drawer__close" id="drawerClose" aria-label="Close settings">✕</button>
-    </div>
-
-    <div class="drawer__section" id="drawerHowTo">
-      <h3>How to use</h3>
-      <p>New here? Browse the Help Center or let the dashboard walk you through it.</p>
-      <div class="btn-row">
-        <button class="btn" id="howtoReadBtn">📖 Help Center</button>
-        <button class="btn btn--primary" id="howtoTourBtn">🧭 Guide me</button>
-      </div>
-    </div>
-
-    <div class="drawer__section" id="drawerPrefs">
-      <h3>Preferences</h3>
-      <p>Display options for the whole dashboard.</p>
-      <label class="field"><span>Your name</span>
-        <input type="text" id="nameInput" placeholder="Vaugn" />
-      </label>
-      <label class="field"><span>Currency</span>
-        <select id="currencySelect">
-          <option value="USD">USD — US Dollar</option>
-          <option value="EUR">EUR — Euro</option>
-          <option value="GBP">GBP — British Pound</option>
-          <option value="PHP">PHP — Philippine Peso</option>
-          <option value="AUD">AUD — Australian Dollar</option>
-          <option value="CAD">CAD — Canadian Dollar</option>
-        </select>
-      </label>
-      <label class="field"><span>Weight unit</span>
-        <select id="weightUnitSelect">
-          <option value="lbs">Pounds (lbs)</option>
-          <option value="kg">Kilograms (kg)</option>
-        </select>
-      </label>
-      <label class="rcp-toggle"><input type="checkbox" id="kpiSyncToggle" checked /> Auto-sync Leads &amp; Clients from Pipeline</label>
-    </div>
-
-    <div class="drawer__section" id="drawerSheets">
-      <h3>Google Sheets sync</h3>
-      <p>Optional. Deploy <code>apps-script/Code.gs</code> as a Web App under your own Google account, then paste its URL here. The URL is stored only in this browser — never in the repo. See the README for the 2-minute setup.</p>
-      <label class="field"><span>Apps Script Web App URL</span>
-        <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/…/exec" />
-      </label>
-      <div class="btn-row">
-        <button class="btn btn--primary" id="pushBtn">Push to Sheet</button>
-        <button class="btn" id="pullBtn">Pull from Sheet</button>
-      </div>
-    </div>
-
-    <div class="drawer__section" id="drawerBackup">
-      <h3>Backup</h3>
-      <p>Download or restore all values, goals and settings as a JSON file.</p>
-      <div class="btn-row">
-        <button class="btn" id="exportBtn">Export JSON</button>
-        <label class="btn file-btn">Import JSON<input type="file" id="importInput" accept="application/json,.json" /></label>
-      </div>
-    </div>
-
-    <div class="drawer__section">
-      <h3>Danger zone</h3>
-      <p>Erase everything stored in this browser and start over.</p>
-      <div class="btn-row">
-        <button class="btn btn--danger" id="resetBtn">Reset all data</button>
-      </div>
-    </div>
-  </aside>
+  <!-- Settings drawer is injected by assets/js/settings.js -->
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -157,8 +94,16 @@
   <script src="assets/js/sheets-sync.js"></script>
   <script src="assets/js/crm/crm-data.js"></script>
   <script src="assets/js/crm/crm-store.js"></script>
+  <script src="assets/js/history.js"></script>
+  <script src="assets/js/settings.js"></script>
   <script src="assets/js/app.js"></script>
   <script src="assets/js/tour.js"></script>
   <script src="assets/js/help.js"></script>
+  <script src="assets/js/sample-data.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>

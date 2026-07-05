@@ -6,6 +6,10 @@
   <title>Sales Pipeline — Vaugn Studio</title>
   <meta name="description" content="Sales Pipeline CRM — every lead, every deal, one place." />
   <meta name="color-scheme" content="dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; manifest-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="theme-color" content="#0a0c10" />
+  <script>try { var _t = JSON.parse(localStorage.getItem("vaugn.dashboard.v1")).settings.theme; if (_t && _t !== "midnight") document.documentElement.dataset.theme = _t; } catch (e) {}</script>
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text x='50' y='68' font-size='52' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230a0c10'>V</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,11 +31,16 @@
       <nav class="nav" aria-label="Main">
         <a class="nav__link" href="index.html">Dashboard</a>
         <a class="nav__link is-active" href="crm.html" aria-current="page">Sales Pipeline</a>
+        <a class="nav__link" href="reports.html">Reports</a>
       </nav>
       <div class="topbar__actions">
         <button class="icon-btn" id="helpBtn" aria-label="Open help center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
           Help
+        </button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
         </button>
       </div>
     </header>
@@ -47,23 +56,23 @@
 
     <!-- Stats bar -->
     <div class="crm-stats">
-      <div class="crm-stat">
+      <div class="crm-stat crm-stat--link" data-stat="pipeline" role="button" tabindex="0">
         <p class="crm-stat__label">Pipeline Value</p>
         <p class="crm-stat__value" id="statPipeline">—</p>
       </div>
-      <div class="crm-stat crm-stat--alert">
+      <div class="crm-stat crm-stat--alert crm-stat--link" data-stat="due" role="button" tabindex="0">
         <p class="crm-stat__label">Due Today</p>
         <p class="crm-stat__value" id="statDue">—</p>
       </div>
-      <div class="crm-stat">
+      <div class="crm-stat crm-stat--link" data-stat="open" role="button" tabindex="0">
         <p class="crm-stat__label">Open Leads</p>
         <p class="crm-stat__value" id="statOpen">—</p>
       </div>
-      <div class="crm-stat">
+      <div class="crm-stat crm-stat--link" data-stat="win" role="button" tabindex="0">
         <p class="crm-stat__label">Win Rate</p>
         <p class="crm-stat__value" id="statWin">—</p>
       </div>
-      <div class="crm-stat crm-stat--won">
+      <div class="crm-stat crm-stat--won crm-stat--link" data-stat="wonmonth" role="button" tabindex="0">
         <p class="crm-stat__label">Won This Month</p>
         <p class="crm-stat__value" id="statWon">—</p>
       </div>
@@ -144,7 +153,7 @@
 
     <footer class="footer">
       <span>Data lives in your browser · <kbd>N</kbd> new lead · <kbd>/</kbd> search · click a row for details</span>
-      <span>Sales Pipeline · Vaugn Studio OS</span>
+      <span>Sales Pipeline · Vaugn Studio</span>
     </footer>
   </div>
 
@@ -314,9 +323,17 @@
   <script src="assets/js/sheets-sync.js"></script>
   <script src="assets/js/crm/crm-data.js"></script>
   <script src="assets/js/crm/crm-store.js"></script>
+  <script src="assets/js/history.js"></script>
+  <script src="assets/js/settings.js"></script>
   <script src="assets/js/crm/crm-table.js"></script>
   <script src="assets/js/crm/crm-app.js"></script>
   <script src="assets/js/tour.js"></script>
   <script src="assets/js/help.js"></script>
+  <script src="assets/js/sample-data.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>

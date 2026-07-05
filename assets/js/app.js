@@ -153,21 +153,80 @@
 
   function renderSections() {
     const wrap = $('#sections');
+    const collapsed = Store.state.settings.collapsedSections || [];
     wrap.innerHTML = GROUPS.map((g) => {
       const cards = METRICS.filter((m) => m.group === g.id).map(cardHTML).join('');
+      const isCollapsed = collapsed.includes(g.id);
       return `
-        <section class="section" id="section-${g.id}">
+        <section class="section ${isCollapsed ? 'is-collapsed' : ''}" id="section-${g.id}">
           <header class="section__head">
             <span class="section__tag">${g.tag}</span>
             <div>
               <h2 class="section__title">${g.label}</h2>
               <p class="section__blurb">${g.blurb}</p>
             </div>
+            <button class="section__toggle" data-collapse="${g.id}" aria-expanded="${!isCollapsed}" title="${isCollapsed ? 'Expand' : 'Collapse'} ${g.label}">▾</button>
           </header>
           <div class="grid">${cards}</div>
         </section>`;
     }).join('');
   }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-collapse]');
+    if (!btn) return;
+    const id = btn.dataset.collapse;
+    const collapsed = new Set(Store.state.settings.collapsedSections || []);
+    collapsed.has(id) ? collapsed.delete(id) : collapsed.add(id);
+    Store.setSetting('collapsedSections', Array.from(collapsed));
+  });
+
+  /* ── Onboarding checklist (first-run momentum) ──────────── */
+
+  function renderChecklist() {
+    const wrap = $('#checklist');
+    if (!wrap) return;
+    let sample = false;
+    try { sample = localStorage.getItem('vaugn.sample') === '1'; } catch (e) { /* ignore */ }
+    if (Store.state.settings.checklistDismissed || sample) { wrap.innerHTML = ''; return; }
+
+    const items = [
+      { id: 'numbers', label: 'Add your real numbers', done: METRICS.filter((m) => Store.get(m.id).value > 0).length >= 3, act: 'numbers' },
+      { id: 'lead', label: 'Add your first lead', done: window.CrmStore && CrmStore.hasData(), act: 'lead' },
+      { id: 'tour', label: 'Take the 1-minute tour', done: (() => { try { return !!localStorage.getItem('vaugn.dashboard.welcomed'); } catch (e) { return false; } })(), act: 'tour' },
+      { id: 'backup', label: 'Export a backup', done: !!Store.state.settings.backedUp, act: 'backup' },
+    ];
+    const doneCount = items.filter((i) => i.done).length;
+    if (doneCount === items.length) { wrap.innerHTML = ''; return; }
+
+    wrap.innerHTML = `
+      <div class="checklist">
+        <div class="checklist__head">
+          <h2 class="checklist__title">🚀 Get set up</h2>
+          <div class="checklist__meta">
+            <span class="checklist__count">${doneCount} of ${items.length}</span>
+            <button class="checklist__dismiss" data-check-act="dismiss">Dismiss</button>
+          </div>
+        </div>
+        <div class="checklist__items">
+          ${items.map((i) => `
+            <button class="check-item ${i.done ? 'is-done' : ''}" data-check-act="${i.done ? '' : i.act}">
+              <i>${i.done ? '✓' : ''}</i> ${i.label}
+            </button>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-check-act]');
+    if (!el) return;
+    const act = el.dataset.checkAct;
+    if (act === 'dismiss') { Store.setSetting('checklistDismissed', true); }
+    else if (act === 'numbers') { $('#section-finance')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); toast('Click any value on a card, type your number, press Enter.'); }
+    else if (act === 'lead') location.href = 'crm.html';
+    else if (act === 'tour' && window.HelpUI) HelpUI.showTourPick();
+    else if (act === 'backup') { openDrawer(); $('#drawerBackup')?.scrollIntoView({ block: 'center' }); }
+  });
 
   /* ── Inline editing ─────────────────────────────────────── */
 
@@ -240,7 +299,7 @@
     });
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-    $('#greeting').textContent = `${greeting}, ${Store.state.settings.ownerName}.`;
+    $('#greeting').textContent = Store.state.settings.ownerName ? `${greeting}, ${Store.state.settings.ownerName}.` : `${greeting} 👋`;
 
     const u = Store.state.updatedAt;
     $('#lastUpdated').textContent = u
@@ -252,93 +311,10 @@
     $('#overallRing').style.setProperty('--pct', totalPct);
   }
 
-  /* ── Settings drawer ────────────────────────────────────── */
+  /* ── Settings drawer (shared module — settings.js) ──────── */
 
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-
-  function openDrawer() {
-    drawer.classList.add('is-open');
-    scrim.classList.add('is-visible');
-    drawer.setAttribute('aria-hidden', 'false');
-    $('#currencySelect').value = Store.state.settings.currency;
-    $('#weightUnitSelect').value = Store.state.settings.weightUnit;
-    $('#nameInput').value = Store.state.settings.ownerName;
-    $('#sheetsUrlInput').value = Store.state.settings.sheetsUrl;
-  }
-  function closeDrawer() {
-    drawer.classList.remove('is-open');
-    scrim.classList.remove('is-visible');
-    drawer.setAttribute('aria-hidden', 'true');
-  }
-
-  $('#settingsBtn').addEventListener('click', openDrawer);
-  $('#drawerClose').addEventListener('click', closeDrawer);
-  scrim.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', (e) => {
-    // Defer to the tour / help surfaces — they own Escape while open.
-    if (e.key === 'Escape' && !(window.Tour && Tour.active) && !(window.HelpUI && HelpUI.anyOpen())) closeDrawer();
-  });
-
-  $('#currencySelect').addEventListener('change', (e) => {
-    Store.setSetting('currency', e.target.value);
-    toast(`Currency set to ${e.target.value}`);
-  });
-  $('#weightUnitSelect').addEventListener('change', (e) => {
-    Store.setSetting('weightUnit', e.target.value);
-    toast(`Weight unit set to ${e.target.value}`);
-  });
-  $('#nameInput').addEventListener('change', (e) => {
-    Store.setSetting('ownerName', e.target.value.trim() || 'there');
-  });
-  $('#sheetsUrlInput').addEventListener('change', (e) => {
-    Store.setSetting('sheetsUrl', e.target.value.trim());
-    toast(e.target.value.trim() ? 'Sheets URL saved (kept only in this browser).' : 'Sheets sync disabled.');
-  });
-
-  async function runSync(kind) {
-    const btn = kind === 'pull' ? $('#pullBtn') : $('#pushBtn');
-    btn.disabled = true;
-    btn.classList.add('is-busy');
-    try {
-      if (kind === 'pull') {
-        const n = await SheetsSync.pull();
-        toast(n ? `Pulled ${n} value${n === 1 ? '' : 's'} from your sheet.` : 'Sheet had no matching values yet — try Push first.');
-      } else {
-        const n = await SheetsSync.push();
-        toast(`Pushed ${n} metrics to your sheet.`);
-      }
-    } catch (err) {
-      toast(err.message || 'Sync failed.', 'error');
-    } finally {
-      btn.disabled = false;
-      btn.classList.remove('is-busy');
-    }
-  }
-  $('#pullBtn').addEventListener('click', () => runSync('pull'));
-  $('#pushBtn').addEventListener('click', () => runSync('push'));
-
-  $('#exportBtn').addEventListener('click', () => {
-    Store.exportJSON();
-    toast('Backup downloaded.');
-  });
-  $('#importInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      Store.importJSON(await file.text());
-      toast('Backup restored.');
-    } catch (err) {
-      toast(err.message || 'Could not import that file.', 'error');
-    }
-    e.target.value = '';
-  });
-  $('#resetBtn').addEventListener('click', () => {
-    if (confirm('Reset every value and goal back to defaults? Your data in this browser will be erased.')) {
-      Store.resetAll();
-      toast('Dashboard reset.');
-    }
-  });
+  const openDrawer = () => window.SettingsUI && SettingsUI.open();
+  const closeDrawer = () => window.SettingsUI && SettingsUI.close();
 
   /* ── Toasts ─────────────────────────────────────────────── */
 
@@ -356,22 +332,13 @@
   function renderAll() {
     syncFromCrm();
     renderHero();
+    renderChecklist();
     renderSections();
     renderPipeline();
     renderMeta();
   }
 
   document.addEventListener('store:changed', renderAll);
-
-  // KPI sync toggle (Settings → Preferences)
-  const kpiToggle = $('#kpiSyncToggle');
-  if (kpiToggle) {
-    kpiToggle.checked = Store.state.settings.kpiSync !== false;
-    kpiToggle.addEventListener('change', (e) => {
-      Store.setSetting('kpiSync', e.target.checked);
-      toast(e.target.checked ? 'Leads & Clients now sync from your pipeline.' : 'Leads & Clients are manual again.');
-    });
-  }
 
   // Live-refresh when the pipeline changes in another tab
   window.addEventListener('storage', (e) => {

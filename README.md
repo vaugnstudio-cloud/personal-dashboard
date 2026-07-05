@@ -1,69 +1,43 @@
-# Personal Dashboard + Sales Pipeline CRM
+# Vaugn Studio
 
-A dark-premium Business Operating System — 19 life/business metrics **plus a full Sales Pipeline CRM** in one place. Pure HTML/CSS/JS, no build step, no backend required.
+**The freelancer's business operating system.** A dark-premium dashboard + sales pipeline CRM + reports that runs entirely in your browser — no accounts, no subscriptions, no backend. Pure HTML/CSS/JS.
 
-**Live:** https://vaugnstudio-cloud.github.io/personal-dashboard/
+**To run it:** double-click `index.html`. See `START-HERE.txt` for the 2-minute setup.
 
-**📘 Full instructions / SOP:** [SOP.md](SOP.md) — daily routine, backups, Google Sheets setup, editing & troubleshooting.
+## What's inside
 
-**🧭 Built-in help:** click **Help** (top-right on the dashboard) for an in-app guide (*Read Me*) or an interactive spotlight tutorial (*Guide Me* — full ~2 min or quick ~1 min tour). First-time visitors are offered the tour automatically.
-
-![Dark premium dashboard tracking 19 personal metrics with goals and progress bars](#)
-
-## What it tracks
-
-| Section | Metrics |
+| Surface | What it does |
 | --- | --- |
-| **Finance** | Current Salary, Side Income, Savings, Monthly Expenses, Emergency Fund |
-| **Business** | MRR, Clients, Leads, Retainers, Website Income, Affiliate Income |
-| **Content & Products** | Products, Templates Sold, Subscribers, Views, Watch Hours |
-| **Health & Learning** | Weight, Hours Learned, Hours Worked |
+| **📊 Dashboard** | 19 metrics across Finance, Business, Content & Health — each with a goal and progress bar. Click any number to edit; hero stats (Net Monthly Income, Total Saved, MRR, Active Clients) compute themselves. |
+| **🧭 Sales Pipeline** | A real CRM: 19-field lead records, 8 colored stages, follow-up dates that turn red when late, win rate, deal values, bulk actions, keyboard shortcuts. Marks a deal Won → asks to update your dashboard money. |
+| **📈 Reports** | Charts (revenue, funnel, channel performance), a period-based generated report, and a built-in insights engine that reads your data and tells you what to fix next. |
 
-Plus a computed hero: **Net Monthly Income**, **Total Saved**, **MRR**, **Active Clients**, and an overall progress ring across all goals.
+**It teaches itself:** interactive guided tours (2-min or 1-min), a searchable Help Center with real sales SOPs, and first-visit onboarding.
 
-## 🧭 Sales Pipeline (CRM)
+## Principles
 
-The `Sales Pipeline` tab is a full CRM for every lead — website, cold email, LinkedIn, Instagram, referrals, returning clients, product customers:
+- **Private by design.** Everything lives in your browser's localStorage. Nothing is uploaded — ever. Optional Google Sheets sync runs on *your own* Google account.
+- **Fast.** Zero dependencies, no build step, loads instantly, works offline.
+- **Opinionated.** One layout, one theme, no configuration maze. Simple enough for 5 minutes a day, powerful enough to run a business.
 
-- **19-field lead records** (business, contact, problem noticed, best offer, deal value…) in a fast table with status badges, R·C·P indicators, inline editing and a detail drawer
-- **8 pipeline stages** with smart nudges (Contacted auto-fills dates; a reply advances the status)
-- **Stats bar**: Pipeline Value · Due Today · Open Leads · Win Rate · Won This Month
-- **Search (`/`), filter chips, column manager, sorting, bulk actions, undo, keyboard shortcuts (`N`, `↑↓`, `Enter`, `J/K`)**
-- **Dashboard sync**: Leads & Active Clients auto-compute from the pipeline ("Auto · Pipeline" badge); winning a deal offers — never forces — adding the value to MRR or income
-- **Follow-up digest** on load when follow-ups are due
-- **Help Center** (Help button): searchable docs, Quick/Complete guides, SOPs, definitions, FAQ
+## Run it
 
-## How it works
+Open `index.html` in a browser. That's the whole install.
 
-- **Click any value or goal** on a card to edit it. Enter (or click away) saves.
-- Everything is stored in your **browser's localStorage** — instant, offline, private. Nothing is sent anywhere.
-- Progress bars, hero totals and the overall ring **recalculate automatically** on every edit.
-- "Lower is better" metrics (Monthly Expenses, Weight) count being **at or under target** as on-track.
-- **Settings** (gear, top-right): currency, weight unit, your name, JSON export/import backup, reset.
+To host it online free: fork/upload this folder to a GitHub repo → Settings → Pages → deploy from `main`. Done in 5 minutes.
 
-## Run locally
+## Optional: Google Sheets sync
 
-Just open `index.html` in a browser. That's it — no install, no server needed.
+Two-way sync (dashboard metrics + pipeline leads) to a private sheet via a tiny Apps Script you deploy under your own account — no API keys anywhere. Full walkthrough in the in-app **Help Center → Google Sheets Sync**, script in [`apps-script/Code.gs`](apps-script/Code.gs).
 
-## Optional: Google Sheets sync (safe for a public repo)
+## ⚠️ Back up your data
 
-You can mirror your data to a private Google Sheet with two-way Push/Pull. It works via a tiny **Google Apps Script Web App you deploy under your own account** — so this public repo never contains any API key or personal data. The Web App URL is stored only in your browser.
+Everything lives in your browser (localStorage) — private and offline, but **clearing your browser erases it**. Once a month, open **Settings → Backup** and export the two JSON files, or set up Google Sheets sync for automatic backup. The app also reminds you if it's been a while.
 
-1. Create a new [Google Sheet](https://sheets.new).
-2. **Extensions → Apps Script**, delete the default code, paste in [`apps-script/Code.gs`](apps-script/Code.gs), save.
-3. **Deploy → New deployment → Web app**
-   - Execute as: **Me**
-   - Who has access: **Anyone with the link**
-4. Copy the Web App URL (ends in `/exec`).
-5. In the dashboard: **Settings → Google Sheets sync**, paste the URL.
-6. Click **Push to Sheet** to write your current numbers, or **Pull from Sheet** after editing the sheet directly.
+## License
 
-> The "Anyone with the link" setting applies to the script endpoint only, and the URL is unguessable and never published. Your spreadsheet itself stays private. Don't share the URL and don't commit it anywhere.
+Personal / single-business use. Don't resell or redistribute the code. See [LICENSE.md](LICENSE.md).
 
 ## Stack
 
-Vanilla HTML + CSS + JS. Fonts: [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) & [Inter](https://fonts.google.com/specimen/Inter). Hosted on GitHub Pages.
-
----
-
-Designed & tracked by [Vaugn Studio](https://vaugn-portfolio.vercel.app).
+Vanilla HTML/CSS/JS · [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) & [Inter](https://fonts.google.com/specimen/Inter) · localStorage-first · optional Google Apps Script sync.

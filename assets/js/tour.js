@@ -10,7 +10,7 @@
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const PAGE = document.body.dataset.page || 'dashboard';
-  const API = () => window.Dashboard || window.CrmUI;   // page UI adapter
+  const API = () => window.Dashboard || window.CrmUI || window.SettingsUI;   // page UI adapter
 
   const openDrawerHook = async () => { API().openDrawer(); await wait(420); };
   const closeDrawerHook = async () => { API().closeDrawer(); await wait(320); };
@@ -81,7 +81,13 @@
       target: '#drawerBackup',
       title: 'Protect your data 💾',
       before: openDrawerHook,
-      text: 'Your numbers live only in this browser. Export a JSON backup monthly — and use Import to restore or move to a new device. That’s the tour!',
+      text: 'Your numbers live only in this browser. Export a JSON backup monthly — and use Import to restore or move to a new device.',
+    },
+    {
+      target: '.nav__link[href="reports.html"]',
+      title: 'One more thing: Reports 📈',
+      before: closeDrawerHook,
+      text: 'Charts, your pipeline funnel, and a built-in advisor that reads your numbers and tells you what to fix next. Check it weekly. That’s the tour!',
     },
   ];
 
@@ -201,7 +207,12 @@
     {
       target: '#moreBtn',
       title: 'Protect your pipeline 💾',
-      text: 'Export a JSON backup monthly from this menu (Import restores it anywhere). The Help button has the full Sales, Follow-Up and Proposal SOPs. That’s the tour — go win something!',
+      text: 'Export a JSON backup monthly from this menu (Import restores it anywhere). The Help button has the full Sales, Follow-Up and Proposal SOPs.',
+    },
+    {
+      target: '.nav__link[href="reports.html"]',
+      title: 'Then let Reports coach you 📈',
+      text: 'Charts, funnel, channel win rates — and personalized tips computed from your real pipeline. That’s the tour — go win something!',
     },
   ];
 
@@ -238,9 +249,73 @@
     },
   ];
 
+  /* ── Reports steps ──────────────────────────────────────── */
+
+  const REPORTS_FULL = [
+    {
+      target: '.crm-head',
+      title: 'Your numbers, explained 📈',
+      text: 'Reports reads your dashboard and pipeline together and turns them into answers — computed privately on this device, nothing uploaded.',
+    },
+    {
+      target: '#rptPeriods',
+      title: 'Pick a period',
+      text: 'This month, last month, quarter or all time — every chart below follows it. Insights always describe right now.',
+    },
+    {
+      target: '#rptInsights',
+      title: 'What to do next',
+      text: 'Your built-in advisor. Red border = act today, amber = worth watching, green = a win. Most tips are clickable — they jump straight to the fix.',
+    },
+    {
+      target: '#cardRevenue',
+      title: 'The money chart 💰',
+      text: 'Deal value won over time. The headline sentence above it tells you the story without reading the bars.',
+    },
+    {
+      target: '#cardFunnel',
+      title: 'Where deals drop 🔻',
+      text: 'Lead → Contacted → Replied → Call → Proposal → Won, with the drop-off at every stage. Your biggest leak is your biggest opportunity.',
+    },
+    {
+      target: '#cardChannel',
+      title: 'Double down on what works 🎯',
+      text: 'Win rate and revenue per outreach channel. When one channel clearly outperforms, shift next week’s effort there.',
+    },
+    {
+      target: '#rptPrint',
+      title: 'Your weekly ritual 📄',
+      text: 'One click generates a clean business report — print it, save as PDF, or Copy as text. Trends unlock automatically after 7 days of use. That’s the tour!',
+    },
+  ];
+
+  const REPORTS_QUICK = [
+    {
+      target: '#rptInsights',
+      title: 'What to do next 📌',
+      text: 'A private advisor reads your real data: red = act, amber = watch, green = win. Click a tip to jump to the fix.',
+    },
+    {
+      target: '#cardRevenue',
+      title: 'The money chart 💰',
+      text: 'Deal value won over the selected period, explained in a sentence above the bars.',
+    },
+    {
+      target: '#cardFunnel',
+      title: 'Where deals drop 🔻',
+      text: 'Your conversion funnel with drop-offs per stage — find the leak, fix the leak.',
+    },
+    {
+      target: '#rptPrint',
+      title: 'Print it weekly 📄',
+      text: 'Generate a clean PDF business report or copy it as text. Done — go check your insights!',
+    },
+  ];
+
   const TOURS = {
     dashboard: { full: DASH_FULL, quick: DASH_QUICK, welcomeKey: 'vaugn.dashboard.welcomed' },
     crm:       { full: CRM_FULL,  quick: CRM_QUICK,  welcomeKey: 'vaugn.crm.welcomed', onStart: crmOnStart, onEnd: crmOnEnd },
+    reports:   { full: REPORTS_FULL, quick: REPORTS_QUICK, welcomeKey: 'vaugn.reports.welcomed' },
   };
 
   /* ── Injected DOM (identical IDs on every page) ─────────── */
@@ -451,8 +526,9 @@
       if (API()) API().closeDrawer();
       if (cfg && cfg.onEnd) cfg.onEnd();
       try { localStorage.setItem(cfg.welcomeKey, '1'); } catch (err) { /* ignore */ }
+      const doneMsg = { crm: 'You’re all set 🧭 Go add your first real lead.', reports: 'You’re all set 📈 Check your insights weekly.' };
       API().toast(finished
-        ? (PAGE === 'crm' ? 'You’re all set 🧭 Go add your first real lead.' : 'You’re all set 🎉 Your dashboard is ready.')
+        ? (doneMsg[PAGE] || 'You’re all set 🎉 Your dashboard is ready.')
         : 'Tutorial closed — reopen it anytime from Help.');
     },
   };

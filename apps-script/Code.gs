@@ -1,5 +1,5 @@
 /**
- * Personal Dashboard + Sales Pipeline — Google Sheets sync
+ * Studio OS — Google Sheets sync
  * ---------------------------------------------------------
  * Deploy this under YOUR OWN Google account. No keys, no secrets.
  * One deployment syncs BOTH the dashboard metrics and the pipeline.
