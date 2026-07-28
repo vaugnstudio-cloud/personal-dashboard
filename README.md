@@ -1,6 +1,6 @@
 # Vaugn Studio
 
-**The freelancer's business operating system.** A dark-premium dashboard + sales pipeline CRM + reports that runs entirely in your browser — no accounts, no subscriptions, no backend. Pure HTML/CSS/JS.
+**The freelancer's business & career operating system.** A dark-premium dashboard + sales pipeline CRM + job application tracker + reports that runs entirely in your browser — no accounts, no subscriptions, no backend. Pure HTML/CSS/JS.
 
 **To run it:** double-click `index.html`. See `START-HERE.txt` for the 2-minute setup.
 
@@ -10,6 +10,7 @@
 | --- | --- |
 | **📊 Dashboard** | 19 metrics across Finance, Business, Content & Health — each with a goal and progress bar. Click any number to edit; hero stats (Net Monthly Income, Total Saved, MRR, Active Clients) compute themselves. |
 | **🧭 Sales Pipeline** | A real CRM: 19-field lead records, 8 colored stages, follow-up dates that turn red when late, win rate, deal values, bulk actions, keyboard shortcuts. Marks a deal Won → asks to update your dashboard money. |
+| **💼 Job Applications** | A full career pipeline, separate from client leads: paste a job listing URL (Greenhouse / Lever / Ashby / Workable / SmartRecruiters import automatically; blocked sites get an honest paste-the-description parser), review before saving, then track every application through 16 customizable stages. Five views — Overview, table, drag-and-drop kanban, calendar/agenda, and reports with a Career Pipeline Health advisor. Contacts, interviews, tasks, fit scores, CSV in/out. |
 | **📈 Reports** | Charts (revenue, funnel, channel performance), a period-based generated report, and a built-in insights engine that reads your data and tells you what to fix next. |
 
 **It teaches itself:** interactive guided tours (2-min or 1-min), a searchable Help Center with real sales SOPs, and first-visit onboarding.
@@ -32,7 +33,9 @@ Two-way sync (dashboard metrics + pipeline leads) to a private sheet via a tiny 
 
 ## ⚠️ Back up your data
 
-Everything lives in your browser (localStorage) — private and offline, but **clearing your browser erases it**. Once a month, open **Settings → Backup** and export the two JSON files, or set up Google Sheets sync for automatic backup. The app also reminds you if it's been a while.
+Everything lives in your browser (localStorage) — private and offline, but **clearing your browser erases it**. Once a month, open **Settings → Backup** and export the three JSON files (dashboard, pipeline, career), or set up Google Sheets sync for automatic backup. The app also reminds you if it's been a while.
+
+**Moving to a new URL or device?** localStorage is per-domain: export the JSON backups on the old URL, then import them on the new one (Settings → Backup).
 
 ## License
 

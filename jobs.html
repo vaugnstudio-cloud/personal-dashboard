@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Applications — Vaugn Studio</title>
+  <meta name="description" content="Career Pipeline — every job application from saved listing to signed offer, tracked in one place." />
+  <meta name="color-scheme" content="dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://boards-api.greenhouse.io https://api.lever.co https://api.ashbyhq.com https://apply.workable.com https://api.smartrecruiters.com; manifest-src 'self'; object-src 'none'; base-uri 'self'" />
+  <meta name="theme-color" content="#0a0c10" />
+  <script>try { var _t = JSON.parse(localStorage.getItem("vaugn.dashboard.v1")).settings.theme; if (_t && _t !== "midnight") document.documentElement.dataset.theme = _t; } catch (e) {}</script>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%237c5cff'/><text x='50' y='68' font-size='52' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%230a0c10'>V</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body data-page="jobs">
+  <div class="shell shell--wide">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark">V</span>
+        <span>
+          Vaugn Studio
+          <span class="brand__sub">Personal Dashboard</span>
+        </span>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a class="nav__link" href="index.html">Dashboard</a>
+        <a class="nav__link" href="crm.html">Sales Pipeline</a>
+        <a class="nav__link is-active" href="jobs.html" aria-current="page">Job Applications</a>
+        <a class="nav__link" href="reports.html">Reports</a>
+      </nav>
+      <div class="topbar__actions">
+        <button class="icon-btn" id="helpBtn" aria-label="Open help center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          Help
+        </button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Page head -->
+    <div class="crm-head">
+      <div>
+        <h1 class="crm-title">Job <em>Applications</em></h1>
+        <p class="crm-sub" id="jobsSub"></p>
+      </div>
+      <div class="rpt-actions">
+        <button class="btn" id="jobsNewBtn">＋ Add Manually <kbd>N</kbd></button>
+        <button class="btn btn--primary crm-new" id="jobsImportBtn">🔗 Import Job <kbd>I</kbd></button>
+      </div>
+    </div>
+
+    <!-- View tabs -->
+    <nav class="jobs-tabs" aria-label="Career pipeline views">
+      <button class="jobs-tab is-active" data-jobs-tab="dashboard">Overview</button>
+      <button class="jobs-tab" data-jobs-tab="table">Applications</button>
+      <button class="jobs-tab" data-jobs-tab="board">Pipeline</button>
+      <button class="jobs-tab" data-jobs-tab="calendar">Calendar</button>
+      <button class="jobs-tab" data-jobs-tab="reports">Reports</button>
+    </nav>
+
+    <!-- ═══════════ View: Career Dashboard ═══════════ -->
+    <section class="jobs-view" data-view="dashboard">
+      <div class="jb-quick">
+        <div class="jb-quick__text">
+          <h2>Paste a job listing URL</h2>
+          <p>Greenhouse, Lever, Ashby, Workable and SmartRecruiters links import automatically. Anything else: paste the description and it gets structured for you.</p>
+        </div>
+        <div class="jb-quick__row">
+          <input type="url" id="jobsQuickUrl" placeholder="https://jobs.lever.co/company/…" aria-label="Job listing URL" />
+          <button class="btn btn--primary" id="jobsQuickGo">Import Job</button>
+        </div>
+        <div class="jb-quick__alt">
+          <button class="btn btn--ghost" id="jobsQuickPaste">📋 Paste a description instead</button>
+          <button class="btn btn--ghost" id="jobsQuickManual">✍️ Add manually</button>
+        </div>
+      </div>
+
+      <div class="crm-stats jb-kpis" id="jobsKpis" aria-label="Career pipeline stats"></div>
+
+      <section class="rpt-section">
+        <header class="section__head">
+          <span class="section__tag">📌</span>
+          <div>
+            <h2 class="section__title">Needs your attention</h2>
+            <p class="section__blurb">Computed privately from your applications — nothing invented.</p>
+          </div>
+        </header>
+        <div class="rpt-insights" id="jobsAttention"></div>
+      </section>
+
+      <section class="rpt-section">
+        <div class="rpt-grid">
+          <div class="rpt-card" id="jdFunnelCard">
+            <h2 class="rpt-card__title">🔻 Application funnel</h2>
+            <p class="rpt-card__head" id="jdFunnelHead"></p>
+            <div id="jdFunnel"></div>
+          </div>
+          <div class="rpt-card" id="jdStatusCard">
+            <h2 class="rpt-card__title">📊 By status</h2>
+            <p class="rpt-card__head" id="jdStatusHead"></p>
+            <div id="jdStatus"></div>
+          </div>
+        </div>
+        <div class="rpt-card" id="jdVolumeCard">
+          <h2 class="rpt-card__title">📈 Weekly rhythm</h2>
+          <p class="rpt-card__head" id="jdVolumeHead"></p>
+          <div id="jdVolume"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ═══════════ View: Applications table ═══════════ -->
+    <section class="jobs-view" data-view="table" hidden>
+      <div class="crm-toolbar">
+        <label class="crm-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="search" id="jobsSearch" placeholder="Search applications…" />
+          <kbd>/</kbd>
+        </label>
+        <div class="crm-chips" id="jobsChips" aria-label="Filter by stage"></div>
+        <div class="crm-toolbar__end">
+          <select class="crm-select" id="jobsSourceSel" aria-label="Filter by source">
+            <option value="all">All sources</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="indeed">Indeed</option>
+            <option value="glassdoor">Glassdoor</option>
+            <option value="company-site">Company Site</option>
+            <option value="job-board">Job Board</option>
+            <option value="referral">Referral</option>
+            <option value="recruiter">Recruiter</option>
+            <option value="other">Other</option>
+          </select>
+          <select class="crm-select" id="jobsPrioritySel" aria-label="Filter by priority">
+            <option value="all">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <button class="icon-btn" id="jobsColBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>
+            Columns
+          </button>
+          <button class="icon-btn" id="jobsMoreBtn" aria-label="More actions">⋯</button>
+        </div>
+
+        <!-- Column manager popover -->
+        <div class="col-pop" id="jobsColPop" hidden>
+          <p class="col-pop__title">Visible columns</p>
+          <div class="col-pop__grid" id="jobsColGrid"></div>
+        </div>
+
+        <!-- More menu -->
+        <div class="col-pop col-pop--menu" id="jobsMoreMenu" hidden>
+          <button class="menu-item" id="jobsExportCsvAll">⬇ Export all to CSV</button>
+          <button class="menu-item" id="jobsExportCsvFiltered">⬇ Export filtered to CSV</button>
+          <button class="menu-item" id="jobsImportCsvBtn">⬆ Import from CSV</button>
+          <button class="menu-item" id="jobsExportJson">⬇ Export JSON backup</button>
+          <label class="menu-item">⬆ Import JSON backup<input type="file" id="jobsImportJson" accept="application/json,.json" hidden /></label>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="crm-table-wrap" id="jobsTableWrap" hidden>
+        <table class="crm-table">
+          <thead id="jobsThead"></thead>
+          <tbody id="jobsTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="crm-cards" id="jobsCards" hidden></div>
+
+      <!-- Empty states -->
+      <div class="crm-empty" id="jobsEmpty" hidden>
+        <span class="crm-empty__mark">💼</span>
+        <h2>Your career pipeline starts here</h2>
+        <p>Paste a job listing URL and it becomes a fully tracked application — status, follow-ups, interviews, fit scores and reports. Completely separate from your freelance Sales Pipeline.</p>
+        <div class="btn-row">
+          <button class="btn btn--primary" id="jobsEmptyImport">🔗 Import your first job</button>
+          <button class="btn" id="jobsEmptyAdd">＋ Add manually</button>
+        </div>
+      </div>
+      <div class="crm-empty" id="jobsNoMatch" hidden>
+        <span class="crm-empty__mark">🔍</span>
+        <h2>No applications match</h2>
+        <p>Try a different search or clear the active filters.</p>
+        <div class="btn-row">
+          <button class="btn" id="jobsNoMatchClear">Clear filters</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ View: Kanban board ═══════════ -->
+    <section class="jobs-view" data-view="board" hidden>
+      <p class="jb-board-hint">Drag cards between stages — or focus a card and use <kbd>[</kbd> <kbd>]</kbd> to move it, <kbd>Enter</kbd> for the status menu.</p>
+      <div class="jb-board" id="jobsBoard" aria-label="Application pipeline board"></div>
+    </section>
+
+    <!-- ═══════════ View: Calendar ═══════════ -->
+    <section class="jobs-view" data-view="calendar" hidden>
+      <div class="crm-toolbar jb-cal-toolbar">
+        <div class="crm-chips">
+          <button class="chip" id="jobsCalModeMonth">Month</button>
+          <button class="chip" id="jobsCalModeAgenda">Agenda</button>
+        </div>
+        <div class="jb-cal-nav" id="jobsCalNav">
+          <button class="icon-btn" id="jobsCalPrev" aria-label="Previous month">←</button>
+          <button class="icon-btn" id="jobsCalToday">Today</button>
+          <button class="icon-btn" id="jobsCalNext" aria-label="Next month">→</button>
+          <strong class="jb-cal-title" id="jobsCalTitle"></strong>
+        </div>
+        <div class="jb-cal-legend">
+          <span><i class="jb-ev--interview"></i> Interview</span>
+          <span><i class="jb-ev--deadline"></i> Deadline</span>
+          <span><i class="jb-ev--followup"></i> Follow-up</span>
+          <span><i class="jb-ev--task"></i> Task</span>
+        </div>
+      </div>
+      <div class="jb-cal" id="jobsCalGridWrap">
+        <div class="jb-cal__grid" id="jobsCalGrid"></div>
+      </div>
+      <div class="jb-agenda">
+        <h3 class="jb-agenda__head" id="jobsCalAgendaTitle"></h3>
+        <div id="jobsCalAgenda"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ View: Reports ═══════════ -->
+    <section class="jobs-view" data-view="reports" hidden>
+      <div class="crm-toolbar rpt-toolbar">
+        <div class="crm-chips" id="jobsRptPeriods" aria-label="Report period"></div>
+        <div class="jb-rpt-custom" id="jobsRptCustom" hidden>
+          <label class="field"><span>From</span><input type="date" id="jobsRptFrom" /></label>
+          <label class="field"><span>To</span><input type="date" id="jobsRptTo" /></label>
+        </div>
+        <div class="crm-toolbar__end">
+          <button class="btn" id="jobsRptCopy">Copy as text</button>
+          <button class="btn btn--primary" id="jobsRptPrint">📄 Print / Save PDF</button>
+        </div>
+      </div>
+
+      <div class="crm-stats jb-rpt-stats" id="jobsRptStats"></div>
+
+      <section class="rpt-section">
+        <header class="section__head">
+          <span class="section__tag">🩺</span>
+          <div>
+            <h2 class="section__title">Career Pipeline Health</h2>
+            <p class="section__blurb">What improved, what needs attention, where applications get stuck — from your real records only.</p>
+          </div>
+        </header>
+        <div class="rpt-insights" id="jobsRptHealth"></div>
+      </section>
+
+      <section class="rpt-section">
+        <div class="rpt-card" id="jrVolumeCard">
+          <h2 class="rpt-card__title">📈 Applications submitted</h2>
+          <p class="rpt-card__head" id="jrVolumeHead"></p>
+          <div id="jrVolume"></div>
+        </div>
+        <div class="rpt-grid">
+          <div class="rpt-card" id="jrFunnelCard">
+            <h2 class="rpt-card__title">🔻 Period funnel</h2>
+            <p class="rpt-card__head" id="jrFunnelHead"></p>
+            <div id="jrFunnel"></div>
+          </div>
+          <div class="rpt-card" id="jrSourceCard">
+            <h2 class="rpt-card__title">🎯 Source effectiveness</h2>
+            <p class="rpt-card__head" id="jrSourceHead"></p>
+            <div id="jrSource"></div>
+          </div>
+        </div>
+        <div class="rpt-card">
+          <h2 class="rpt-card__title">⏱ Stage timing</h2>
+          <div id="jrTiming"></div>
+        </div>
+      </section>
+    </section>
+
+    <button class="btn btn--primary crm-fab" id="jobsFab">🔗 Import Job</button>
+
+    <footer class="footer">
+      <span>Data lives in your browser · <kbd>I</kbd> import · <kbd>N</kbd> add · <kbd>/</kbd> search · click a row for details</span>
+      <span>Career Pipeline · Vaugn Studio</span>
+    </footer>
+  </div>
+
+  <!-- Floating status menu -->
+  <div class="status-menu" id="jobsStatusMenu" hidden></div>
+
+  <!-- Bulk actions bar -->
+  <div class="bulk-bar" id="jobsBulkBar" hidden>
+    <span id="jobsBulkCount"></span>
+    <button class="btn" id="jobsBulkStatus">Set Status</button>
+    <button class="btn" id="jobsBulkFollow">Set Follow-Up</button>
+    <button class="btn" id="jobsBulkArchive">Archive</button>
+    <button class="btn btn--danger" id="jobsBulkDelete">Delete</button>
+  </div>
+
+  <!-- Application drawer -->
+  <div class="scrim" id="jobsScrim"></div>
+  <aside class="drawer drawer--lead drawer--jobs" id="jobsDrawer" aria-hidden="true" aria-label="Application details">
+    <div class="drawer__head">
+      <div class="lead-drawer-title">
+        <span class="lead-avatar lead-avatar--lg" id="jobsDrawerAvatar">?</span>
+        <div>
+          <h2 class="drawer__title" id="jobsDrawerName">Application</h2>
+          <p class="jb-drawer-role" id="jobsDrawerRole"></p>
+          <span class="badge jbadge--slate" id="jobsDrawerBadge">Saved</span>
+          <span class="jb-drawer-meta" id="jobsDrawerMeta"></span>
+        </div>
+      </div>
+      <div class="lead-drawer-nav">
+        <button class="drawer__close" id="jobsDrawerPrev" title="Previous application (K)">↑</button>
+        <button class="drawer__close" id="jobsDrawerNext" title="Next application (J)">↓</button>
+        <button class="drawer__close" id="jobsDrawerClose" aria-label="Close">✕</button>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Overview</h3>
+      <div class="field-grid">
+        <label class="field"><span>Job Title</span><input id="f-jtitle" placeholder="Senior Product Designer" /></label>
+        <label class="field"><span>Company</span><input id="f-jcompany" placeholder="Acme Inc." /></label>
+        <label class="field"><span>Status</span><select id="f-jstatus"></select></label>
+        <label class="field"><span>Priority</span>
+          <select id="f-jpriority">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+        <label class="field"><span>Location</span><input id="f-jlocation" placeholder="Toronto, Canada" /></label>
+        <label class="field"><span>Work Arrangement</span>
+          <select id="f-jarrangement">
+            <option value="">—</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="onsite">On-site</option>
+          </select>
+        </label>
+        <label class="field"><span>Employment Type</span>
+          <select id="f-jemployment">
+            <option value="">—</option>
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
+            <option value="contract">Contract</option>
+            <option value="freelance">Freelance</option>
+            <option value="internship">Internship</option>
+          </select>
+        </label>
+        <label class="field"><span>Source</span>
+          <select id="f-jsource">
+            <option value="">—</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="indeed">Indeed</option>
+            <option value="glassdoor">Glassdoor</option>
+            <option value="company-site">Company Site</option>
+            <option value="job-board">Job Board</option>
+            <option value="referral">Referral</option>
+            <option value="recruiter">Recruiter</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="field"><span>Salary Min</span><input id="f-jsalaryMin" type="number" min="0" step="any" placeholder="0" /></label>
+        <label class="field"><span>Salary Max</span><input id="f-jsalaryMax" type="number" min="0" step="any" placeholder="0" /></label>
+        <label class="field"><span>Currency</span><input id="f-jsalaryCur" placeholder="USD" maxlength="3" /></label>
+        <label class="field"><span>Salary Period</span>
+          <select id="f-jsalaryPer">
+            <option value="year">/year</option>
+            <option value="month">/month</option>
+            <option value="hour">/hour</option>
+          </select>
+        </label>
+        <label class="field field--wide"><span>Original Listing URL</span><input id="f-jurl" placeholder="https://…" /></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Dates</h3>
+      <div class="field-grid">
+        <label class="field"><span>Posted</span><input id="f-jposted" type="date" /></label>
+        <label class="field"><span>Deadline</span><input id="f-jdeadline" type="date" /></label>
+        <label class="field"><span>Date Applied</span><input id="f-japplied" type="date" /></label>
+        <label class="field"><span>Follow-Up Date</span><input id="f-jfollow" type="date" /></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Job Details</h3>
+      <div class="field-grid">
+        <label class="field field--wide"><span>Full Description</span><textarea id="f-jdesc" rows="5" placeholder="The complete job description…"></textarea></label>
+        <label class="field field--wide"><span>Responsibilities <em class="jb-field-hint">one per line</em></span><textarea id="f-jresp" rows="3"></textarea></label>
+        <label class="field field--wide"><span>Required Qualifications <em class="jb-field-hint">one per line</em></span><textarea id="f-jreq" rows="3"></textarea></label>
+        <label class="field field--wide"><span>Preferred Qualifications <em class="jb-field-hint">one per line</em></span><textarea id="f-jpref" rows="2"></textarea></label>
+        <label class="field field--wide"><span>Benefits <em class="jb-field-hint">one per line</em></span><textarea id="f-jbenefits" rows="2"></textarea></label>
+        <label class="field"><span>Skills <em class="jb-field-hint">comma-separated</em></span><input id="f-jskills" placeholder="Figma, Webflow, Design systems" /></label>
+        <label class="field"><span>Tools & Platforms <em class="jb-field-hint">comma-separated</em></span><input id="f-jtools" placeholder="Jira, Notion" /></label>
+        <label class="field"><span>Experience Level</span><input id="f-jexp" placeholder="Senior / 5+ years" /></label>
+        <label class="field"><span>Education</span><input id="f-jedu" placeholder="Not required / BA…" /></label>
+        <label class="field"><span>Schedule / Shift</span><input id="f-jschedule" placeholder="Mon–Fri, flexible" /></label>
+        <label class="field"><span>Time Zone Requirement</span><input id="f-jtimezone" placeholder="±3h EST overlap" /></label>
+        <label class="field field--wide"><span>Travel Requirements</span><input id="f-jtravel" placeholder="None / quarterly offsites" /></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Company</h3>
+      <div class="field-grid">
+        <label class="field"><span>Website</span><input id="f-jcweb" placeholder="https://…" /></label>
+        <label class="field"><span>Industry</span><input id="f-jcindustry" placeholder="Healthtech" /></label>
+        <label class="field"><span>Company Size</span><input id="f-jcsize" placeholder="51–200" /></label>
+        <label class="field"><span>Headquarters</span><input id="f-jcloc" placeholder="Austin, TX" /></label>
+        <label class="field"><span>LinkedIn Page</span><input id="f-jclinkedin" placeholder="linkedin.com/company/…" /></label>
+        <label class="field"><span>Careers Page</span><input id="f-jccareers" placeholder="https://…/careers" /></label>
+        <label class="field field--wide"><span>About the Company</span><textarea id="f-jcdesc" rows="2"></textarea></label>
+        <label class="field field--wide"><span>Research & Culture Notes</span><textarea id="f-jcnotes" rows="3" placeholder="Recent news, culture signals, why this company interests you…"></textarea></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Contacts</h3>
+      <div id="jobsContacts"></div>
+      <div class="btn-row"><button class="btn" data-sub-add="contacts">＋ Add contact</button></div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Documents</h3>
+      <div class="field-grid">
+        <label class="field"><span>Resume Version Used</span><input id="f-jdresume" placeholder="resume-product-v3.pdf" /></label>
+        <label class="field"><span>Cover Letter</span><input id="f-jdcover" placeholder="File name or link" /></label>
+        <label class="field"><span>Portfolio Version / URL</span><input id="f-jdportfolio" placeholder="https://…" /></label>
+        <label class="field"><span>Case Studies Submitted</span><input id="f-jdcase" placeholder="Averis, Maison…" /></label>
+        <label class="field"><span>Date Submitted</span><input id="f-jdsubmitted" type="date" /></label>
+        <label class="field field--wide"><span>Document Notes</span><textarea id="f-jdnotes" rows="2" placeholder="Tailoring notes, screening questions answered…"></textarea></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Fit & Opportunity</h3>
+      <p class="jb-fit-note">Your own editable scores (0–10) — nothing here is auto-judged.</p>
+      <div id="jobsFitScores"></div>
+      <div class="field-grid" style="margin-top:12px">
+        <label class="field field--wide"><span>Reasons to Apply</span><textarea id="f-fit-reasons" rows="2"></textarea></label>
+        <label class="field field--wide"><span>Potential Concerns</span><textarea id="f-fit-concerns" rows="2"></textarea></label>
+        <label class="field"><span>Missing Qualifications</span><textarea id="f-fit-missing" rows="2"></textarea></label>
+        <label class="field"><span>Transferable Strengths</span><textarea id="f-fit-strengths" rows="2"></textarea></label>
+        <label class="field"><span>Skills to Emphasize</span><textarea id="f-fit-emphasize" rows="2"></textarea></label>
+        <label class="field"><span>Interview Talking Points</span><textarea id="f-fit-talkingPoints" rows="2"></textarea></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Interviews & Assessments</h3>
+      <div id="jobsInterviews"></div>
+      <div class="btn-row"><button class="btn" data-sub-add="interviews">＋ Add interview</button></div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Tasks & Follow-Ups</h3>
+      <div id="jobsTasks"></div>
+      <div class="btn-row"><button class="btn" data-sub-add="tasks">＋ Add task</button></div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Tags &amp; Notes</h3>
+      <div class="field-grid">
+        <label class="field field--wide"><span>Tags <em class="jb-field-hint">comma-separated</em></span><input id="f-jtags" placeholder="dream-role, design-systems, referral" /></label>
+        <label class="field field--wide"><span>Notes</span><textarea id="f-jnotes" rows="3" placeholder="Anything else worth remembering…"></textarea></label>
+      </div>
+    </div>
+
+    <div class="drawer__section">
+      <h3>Activity</h3>
+      <p class="jb-import-meta" id="jobsImportMeta"></p>
+      <div class="jb-activity-add">
+        <input type="text" id="jobsActivityInput" placeholder="Add a timeline note…" />
+        <button class="btn" id="jobsActivityAdd">Add</button>
+      </div>
+      <ul class="activity" id="jobsActivity"></ul>
+    </div>
+
+    <div class="drawer__section">
+      <div class="btn-row">
+        <button class="btn btn--primary" id="jobsDrawerDone">Done</button>
+        <button class="btn" id="jobsDrawerDuplicate">Duplicate</button>
+        <button class="btn" id="jobsDrawerArchive">Archive</button>
+        <button class="btn btn--danger" id="jobsDrawerDelete">Delete</button>
+      </div>
+      <p class="drawer-hint">Changes save automatically as you type. Duplicate reuses this record as a template.</p>
+    </div>
+  </aside>
+
+  <!-- Import modal -->
+  <div class="modal" id="jobsImportModal" hidden role="dialog" aria-modal="true" aria-label="Import a job">
+    <div class="modal__card modal__card--import">
+      <button class="modal__close" id="jobsImportClose" aria-label="Close">✕</button>
+
+      <div id="jobsImportInput">
+        <h2 class="modal__title">Import a job</h2>
+        <p class="modal__sub">Paste a listing URL, or paste the description text — you review everything before it's saved.</p>
+        <div class="hc__tabs" style="margin-bottom:14px">
+          <button class="chip is-active" id="jobsImpTabUrl">🔗 From URL</button>
+          <button class="chip" id="jobsImpTabPaste">📋 Paste description</button>
+        </div>
+        <div class="jb-import-error" id="jobsImportError" hidden></div>
+        <div id="jobsImportUrlPane">
+          <label class="field"><span>Job listing URL</span>
+            <input type="url" id="jobsImportUrl" placeholder="https://boards.greenhouse.io/…  ·  https://jobs.lever.co/…" />
+          </label>
+          <p class="jb-import-note">Reads public job APIs directly from your browser — works with Greenhouse, Lever, Ashby, Workable and SmartRecruiters links. LinkedIn and Indeed block automated reading; for those, use the paste tab.</p>
+          <div class="btn-row">
+            <button class="btn btn--primary" id="jobsImportGo">Import Job</button>
+            <button class="btn btn--ghost" id="jobsImportManual">✍️ Add manually instead</button>
+          </div>
+        </div>
+        <div id="jobsImportPastePane" hidden>
+          <label class="field"><span>Job listing URL <em class="jb-field-hint">optional, kept for reference</em></span>
+            <input type="url" id="jobsImportPasteUrl" placeholder="https://…" />
+          </label>
+          <label class="field"><span>Job description</span>
+            <textarea id="jobsImportPaste" rows="8" placeholder="Paste the complete job posting here — title, responsibilities, requirements, benefits, salary…"></textarea>
+          </label>
+          <div class="btn-row">
+            <button class="btn btn--primary" id="jobsImportParse">Structure it</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="jobsImportBusy" hidden>
+        <h2 class="modal__title">Reading the listing…</h2>
+        <p class="modal__sub">Calling the job board's public API from your browser. Nothing is saved yet.</p>
+        <div class="jb-import-spinner"></div>
+      </div>
+
+      <div id="jobsImportReview" hidden>
+        <h2 class="modal__title">Review before saving</h2>
+        <p class="modal__sub" id="jobsReviewMeta"></p>
+        <div class="jb-review-dupe" id="jobsReviewDupe" hidden></div>
+        <div class="jb-review-fields" id="jobsReviewFields"></div>
+        <div class="btn-row jb-review-actions">
+          <button class="btn btn--primary" id="jobsReviewSave">✓ Save application</button>
+          <button class="btn" id="jobsReviewBack">← Back</button>
+          <button class="btn btn--ghost" id="jobsImportCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV mapping modal -->
+  <div class="modal" id="jobsCsvModal" hidden role="dialog" aria-modal="true" aria-label="Import CSV">
+    <div class="modal__card modal__card--import">
+      <h2 class="modal__title">Map your CSV columns</h2>
+      <p class="modal__sub" id="jobsCsvCount"></p>
+      <div class="jb-csv-grid" id="jobsCsvGrid"></div>
+      <div class="btn-row">
+        <button class="btn btn--primary" id="jobsCsvImport">Import rows</button>
+        <button class="btn" id="jobsCsvCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="jobsCsvInput" accept=".csv,text/csv" hidden />
+
+  <!-- Follow-up / confirm modals -->
+  <div class="tour-confirm" id="jobsFollowModal" hidden>
+    <div class="tour-confirm__card">
+      <p class="tour-confirm__msg">Set follow-up date for selected applications</p>
+      <label class="field"><span>Follow-Up Date</span><input type="date" id="jobsFollowDate" /></label>
+      <div class="btn-row">
+        <button class="btn btn--primary" id="jobsFollowApply">Apply</button>
+        <button class="btn" id="jobsFollowCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour-confirm" id="jobsConfirmModal" hidden>
+    <div class="tour-confirm__card">
+      <p class="tour-confirm__msg" id="jobsConfirmMsg"></p>
+      <div class="btn-row">
+        <button class="btn btn--danger" id="jobsConfirmYes">Yes, delete</button>
+        <button class="btn btn--primary" id="jobsConfirmNo">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generated report (print target) -->
+  <div id="jobsReportView" class="report-view" aria-hidden="true"></div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/sheets-sync.js"></script>
+  <script src="assets/js/crm/crm-data.js"></script>
+  <script src="assets/js/crm/crm-store.js"></script>
+  <script src="assets/js/jobs/jobs-data.js"></script>
+  <script src="assets/js/jobs/jobs-store.js"></script>
+  <script src="assets/js/history.js"></script>
+  <script src="assets/js/settings.js"></script>
+  <script src="assets/js/reports/charts.js"></script>
+  <script src="assets/js/jobs/jobs-render.js"></script>
+  <script src="assets/js/jobs/jobs-extract.js"></script>
+  <script src="assets/js/jobs/jobs-import-ui.js"></script>
+  <script src="assets/js/jobs/jobs-views.js"></script>
+  <script src="assets/js/jobs/jobs-app.js"></script>
+  <script src="assets/js/tour.js"></script>
+  <script src="assets/js/help.js"></script>
+  <script src="assets/js/sample-data.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

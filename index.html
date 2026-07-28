@@ -31,6 +31,7 @@
       <nav class="nav" aria-label="Main">
         <a class="nav__link is-active" href="index.html" aria-current="page">Dashboard</a>
         <a class="nav__link" href="crm.html">Sales Pipeline</a>
+        <a class="nav__link" href="jobs.html">Job Applications</a>
         <a class="nav__link" href="reports.html">Reports</a>
       </nav>
       <div class="topbar__actions">
@@ -74,6 +75,9 @@
     <!-- Pipeline summary strip (renders only when the CRM has data) -->
     <div id="pipeStrip"></div>
 
+    <!-- Career summary strip (renders only when Job Applications has data) -->
+    <div id="careerStrip"></div>
+
     <!-- Metric sections (rendered by app.js) -->
     <main id="sections"></main>
 
@@ -94,6 +98,8 @@
   <script src="assets/js/sheets-sync.js"></script>
   <script src="assets/js/crm/crm-data.js"></script>
   <script src="assets/js/crm/crm-store.js"></script>
+  <script src="assets/js/jobs/jobs-data.js"></script>
+  <script src="assets/js/jobs/jobs-store.js"></script>
   <script src="assets/js/history.js"></script>
   <script src="assets/js/settings.js"></script>
   <script src="assets/js/app.js"></script>

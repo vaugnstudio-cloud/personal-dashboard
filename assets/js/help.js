@@ -12,16 +12,19 @@
   const WELCOME_KEYS = {
     dashboard: 'vaugn.dashboard.welcomed',
     crm: 'vaugn.crm.welcomed',
+    jobs: 'vaugn.jobs.welcomed',
     reports: 'vaugn.reports.welcomed',
   };
   const WELCOME_KEY = WELCOME_KEYS[PAGE] || WELCOME_KEYS.dashboard;
   const WELCOME = {
     crm: { title: 'Welcome to your Sales Pipeline 🧭', sub: 'Every lead — from first touch to Won — tracked in one place. Want a walkthrough first?' },
+    jobs: { title: 'Welcome to your Career Pipeline 💼', sub: 'Import job listings from a link, track every application to the offer, and let the reports tell you what works. Want a walkthrough first?' },
     reports: { title: 'Your numbers, explained 📈', sub: 'Charts, your funnel, and a private advisor that tells you what to fix next. Want the quick walkthrough?' },
     dashboard: { title: 'Welcome to your dashboard 👋', sub: 'Track your money, business, content and health — all in one place. Want a quick walkthrough first?' },
   }[PAGE] || { title: 'Welcome 👋', sub: 'Want a quick walkthrough?' };
   const TOUR_FULL_DESC = {
     crm: '~2 min · every feature, incl. the lead drawer',
+    jobs: '~2 min · import, views, kanban &amp; reports',
     reports: '~1.5 min · insights, every chart &amp; the report',
     dashboard: '~2 min · every feature, incl. Settings &amp; sync',
   }[PAGE] || '~2 min';
@@ -33,6 +36,7 @@
     { id: 'start',     label: 'Start Here' },
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'crm',       label: 'Sales Pipeline' },
+    { id: 'jobs',      label: 'Job Applications' },
     { id: 'reports',   label: 'Reports' },
     { id: 'sop',       label: 'SOPs & Playbooks' },
     { id: 'ref',       label: 'Reference' },
@@ -189,6 +193,62 @@
         <p>A <strong>Pipeline strip</strong> also appears on the dashboard under the hero once you have leads: Pipeline Value · Win Rate · Due Today — each links here.</p>`,
     },
     {
+      id: 'jobs-import', group: 'jobs', quick: true, title: 'Importing Jobs from a Link',
+      tags: 'import url link job listing extract linkedin indeed greenhouse lever paste description',
+      html: `
+        <p>The fastest way to add an application: paste the job listing URL into <strong>Import Job</strong> (or press <kbd>I</kbd>).</p>
+        <p><strong>What imports automatically:</strong> links from <em>Greenhouse, Lever, Ashby, Workable and SmartRecruiters</em> — the boards most tech and startup jobs actually live on. The app calls their public job APIs directly from your browser; nothing is sent to any middleman server.</p>
+        <p><strong>What doesn't (and why):</strong> LinkedIn, Indeed, Glassdoor and most company career sites actively block automated reading. The app will never pretend otherwise or invent data — instead it keeps your link and switches to the <em>paste tab</em>: copy the whole job description, paste it, and it's parsed into structured fields (responsibilities, requirements, benefits, salary, remote/hybrid…).</p>
+        <p><strong>The review screen:</strong> nothing is saved until you approve. Amber fields were <em>guessed</em> by heuristics — check them. Blank fields simply weren't in the listing. Duplicates (same URL, or same company + title) are flagged before saving.</p>
+        <p>Full manual entry is always available with <kbd>N</kbd>.</p>`,
+    },
+    {
+      id: 'jobs-statuses', group: 'jobs', quick: true, title: 'Application Stages & Kanban',
+      tags: 'status stage pipeline kanban board drag drop customize applied interview offer',
+      html: `
+        <p>Applications move through 16 default stages — from <em>Saved</em> and <em>Preparing</em>, through <em>Applied</em>, screening and interviews, to <em>Offer Received</em>, <em>Accepted</em>, <em>Rejected</em>, <em>Withdrawn</em> or <em>Ghosted</em>.</p>
+        <ul>
+          <li><strong>Change status anywhere:</strong> click a status badge, use the drawer's Status dropdown, or drag cards on the <em>Pipeline</em> board. Every change is stamped into the record's history — that history powers the funnel and “days in stage”.</li>
+          <li><strong>Keyboard on the board:</strong> focus a card, <kbd>Enter</kbd> opens the status menu, <kbd>[</kbd> and <kbd>]</kbd> move it a column. Works great on mobile via tap → badge menu too.</li>
+          <li><strong>Customize stages</strong> in Settings → Job Applications: rename, recolor, reorder, add your own. Each stage belongs to an <em>analytics group</em> (Applied, Interviewing, Offer…) so stats and reports keep working no matter what you call things. Deleting a stage asks where its applications should move — records never break.</li>
+          <li><strong>Archive</strong> hides an application without deleting it (Archived chip reveals them). Reaching the Applied group auto-fills the Date Applied if empty.</li>
+        </ul>`,
+    },
+    {
+      id: 'jobs-tracking', group: 'jobs', quick: true, title: 'Follow-Ups, Interviews & Calendar',
+      tags: 'follow up interview calendar agenda task deadline reminder overdue',
+      html: `
+        <p>Four kinds of dates drive your routine, and all of them land on the <strong>Calendar</strong> automatically:</p>
+        <ul>
+          <li><strong>Follow-up dates</strong> — the engine. Every active application should have one; overdue ones show in red and in the ⚠ Due chip.</li>
+          <li><strong>Application deadlines</strong> — warned about a few days ahead (configurable in Settings) while you haven't applied yet.</li>
+          <li><strong>Interviews</strong> — add them inside the record with date/time, platform, meeting link, prep notes, questions to ask, outcome and your own performance rating.</li>
+          <li><strong>Tasks</strong> — “Customize resume”, “Send thank-you”… anything with a due date.</li>
+        </ul>
+        <p>The <em>Agenda</em> view lists the next 30 days with overdue items pinned on top. Each morning: open ⚠ Due, clear it, set the next dates. Same habit as the Sales Pipeline — different game.</p>`,
+    },
+    {
+      id: 'jobs-fit', group: 'jobs', quick: false, title: 'Fit Scores & Preparation',
+      tags: 'fit score evaluate match priority prepare talking points concerns',
+      html: `
+        <p>Each application has a <strong>Fit &amp; Opportunity</strong> section with seven 0–10 sliders: overall fit, skills, experience, salary, growth, company interest and arrangement fit. <strong>They are your judgment, not the app's</strong> — nothing is auto-scored, and every score stays editable.</p>
+        <p>Below the sliders, write the things that win interviews while they're fresh: reasons to apply, concerns, missing qualifications, transferable strengths, skills to emphasize and talking points. The overall score shows up in the table and on kanban cards so you can prioritize the high-fit roles first.</p>
+        <p><strong>Documents:</strong> track which resume version, cover letter and portfolio URL went to each company — when a recruiter calls back three weeks later, you'll know exactly what they're looking at.</p>`,
+    },
+    {
+      id: 'jobs-data', group: 'jobs', quick: false, title: 'Career Data: CSV, Backups & Privacy',
+      tags: 'csv export import backup json career data privacy separate',
+      html: `
+        <p><strong>Completely separate from your freelance pipeline.</strong> Job applications live under their own storage key (<code>vaugn.jobs.v1</code>) — nothing is ever mixed with Sales Pipeline leads or dashboard metrics.</p>
+        <ul>
+          <li><strong>JSON backup</strong> — Applications view → ⋯ menu, or Settings → Backup → Career JSON. Import restores it anywhere.</li>
+          <li><strong>CSV export</strong> — all applications or just the filtered view, ready for Sheets/Excel.</li>
+          <li><strong>CSV import</strong> — bring records from any other tracker: a mapping screen matches your columns to fields (with sensible auto-guesses), previews rows, and skips duplicates.</li>
+          <li><strong>Reports → Print / Save PDF</strong> — a clean one-page career report for weekly reviews.</li>
+        </ul>
+        <p>Everything is computed and stored in this browser. Job applications contain personal data — nothing is uploaded anywhere.</p>`,
+    },
+    {
       id: 'sales-sop', group: 'sop', quick: false, title: 'Sales SOP',
       tags: 'outreach playbook sell process close',
       html: `
@@ -298,6 +358,13 @@
           <li><kbd>↑</kbd> <kbd>↓</kbd> — move row focus · <kbd>Enter</kbd> — open focused lead</li>
           <li><kbd>J</kbd> / <kbd>K</kbd> — next / previous lead while the drawer is open</li>
           <li><kbd>Esc</kbd> — close drawer / menu / clear focus</li>
+        </ul>
+        <p><strong>Job Applications</strong></p>
+        <ul>
+          <li><kbd>I</kbd> — import a job from a URL · <kbd>N</kbd> — add manually</li>
+          <li><kbd>/</kbd> — search · <kbd>↑</kbd> <kbd>↓</kbd> + <kbd>Enter</kbd> — open from the table</li>
+          <li>On the Pipeline board: <kbd>Enter</kbd> — status menu · <kbd>[</kbd> / <kbd>]</kbd> — move a stage</li>
+          <li><kbd>J</kbd> / <kbd>K</kbd> — next / previous application while the drawer is open</li>
         </ul>
         <p><strong>Dashboard</strong></p>
         <ul>
@@ -453,7 +520,7 @@
   /* ══════════════════════ HELP CENTER ══════════════════════ */
 
   let hcMode = 'all';       // all | quick
-  let hcActive = PAGE === 'crm' ? 'add-leads' : 'quick-start';
+  let hcActive = PAGE === 'crm' ? 'add-leads' : PAGE === 'jobs' ? 'jobs-import' : 'quick-start';
 
   function tocHTML(filterIds = null) {
     return HELP_GROUPS.map((g) => {

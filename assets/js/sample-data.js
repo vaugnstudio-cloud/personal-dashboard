@@ -12,7 +12,7 @@
   'use strict';
 
   const FLAG = 'vaugn.sample';
-  const DATA_KEYS = ['vaugn.dashboard.v1', 'vaugn.crm.v1', 'vaugn.history.v1'];
+  const DATA_KEYS = ['vaugn.dashboard.v1', 'vaugn.crm.v1', 'vaugn.jobs.v1', 'vaugn.history.v1'];
   const STASH_PREFIX = 'vaugn.stash.';
 
   const $ = (sel) => document.querySelector(sel);
@@ -30,8 +30,9 @@
 
     isAppEmpty() {
       const noLeads = !window.CrmStore || !CrmStore.state || CrmStore.state.leads.length === 0;
+      const noJobs = !window.JobsStore || !JobsStore.state || JobsStore.state.jobs.length === 0;
       const noMetrics = !METRICS.some((m) => Store.get(m.id).value > 0);
-      return noLeads && noMetrics;
+      return noLeads && noJobs && noMetrics;
     },
 
     /** Enter sample mode. Stashes real data first (if any), then writes
@@ -49,6 +50,7 @@
       // Exploring counts as welcomed — no tour modals over demo data.
       lsSet('vaugn.dashboard.welcomed', '1');
       lsSet('vaugn.crm.welcomed', '1');
+      lsSet('vaugn.jobs.welcomed', '1');
       lsSet('vaugn.reports.welcomed', '1');
       location.reload();
     },
@@ -101,6 +103,88 @@
       const crm = { leads, view: { visibleColumns: [...CRM_DEFAULT_COLUMNS], sortBy: 'followUpDate', sortDir: 'asc' }, updatedAt: new Date().toISOString() };
       lsSet('vaugn.crm.v1', JSON.stringify(crm));
 
+      // Career pipeline sample — a believable design-role search in motion.
+      if (typeof jobsBlankJob === 'function') {
+        /** history: [[statusId, daysAgo], …] oldest → newest; sets current status too. */
+        const mkJob = (patch, history) => {
+          const j = { ...jobsBlankJob(), ...patch };
+          j.createdAt = dayISO(history[0][1]);
+          j.statusHistory = history.map(([status, ago]) => ({ status, at: dayISO(ago) }));
+          j.status = history[history.length - 1][0];
+          j.updatedAt = dayISO(history[history.length - 1][1]);
+          j.activity = [{ at: j.createdAt, text: 'Application created' }];
+          return j;
+        };
+        const jobs = [
+          mkJob({
+            title: 'Senior Product Designer', company: 'Northwind Health', location: 'Remote — North America',
+            arrangement: 'remote', employmentType: 'full-time', salaryMin: 110000, salaryMax: 135000,
+            source: 'job-board', url: 'https://jobs.lever.co/northwind/senior-product-designer',
+            appliedDate: dayStr(18), priority: 'high', followUpDate: dayStr(-2),
+            skills: ['Figma', 'Design systems', 'Healthcare UX'], tags: ['dream-role'],
+            fit: { ...jobsBlankJob().fit, overall: 9, skills: 9, experience: 8, salary: 8, interest: 9 },
+            interviews: [{ ...jobsBlankInterview(), type: 'video', at: dayStr(-3) + 'T14:00', interviewer: 'Sara Kim (Design Dir.)', platform: 'Google Meet', prepNotes: 'Walk through Averis case study; ask about design maturity.' }],
+            docs: { ...jobsBlankJob().docs, resumeVersion: 'resume-product-v3.pdf', portfolioUrl: 'https://vaugn-portfolio.vercel.app' },
+          }, [['saved', 24], ['applied', 18], ['screening', 12], ['interview-1', 6]]),
+          mkJob({
+            title: 'Brand & Web Designer', company: 'Coastal Dental Group', location: 'Tampa, FL',
+            arrangement: 'hybrid', employmentType: 'full-time', salaryMin: 78000, salaryMax: 92000,
+            source: 'referral', appliedDate: dayStr(30), priority: 'medium', followUpDate: dayStr(3),
+            fit: { ...jobsBlankJob().fit, overall: 7, skills: 9, salary: 6 },
+            tags: ['healthcare'],
+          }, [['saved', 34], ['applied', 30], ['screening', 21], ['interview-1', 14], ['interview-2', 7], ['offer', 1]]),
+          mkJob({
+            title: 'Product Designer, Growth', company: 'Lumen Labs', location: 'Remote — Worldwide',
+            arrangement: 'remote', employmentType: 'full-time', salaryMin: 95000, salaryMax: 115000,
+            source: 'linkedin', url: 'https://www.linkedin.com/jobs/view/3900000001', appliedDate: dayStr(9),
+            priority: 'high', followUpDate: dayStr(0),
+            fit: { ...jobsBlankJob().fit, overall: 8, skills: 8, interest: 8 },
+            tasks: [{ ...jobsBlankTask(), title: 'Send portfolio walkthrough video', type: 'follow-up', due: dayStr(0), priority: 'high' }],
+          }, [['saved', 12], ['applied', 9], ['assessment', 3]]),
+          mkJob({
+            title: 'UX/UI Designer', company: 'Meridian Fintech', location: 'Toronto, Canada',
+            arrangement: 'hybrid', employmentType: 'full-time', salaryMin: 85000, salaryMax: 100000,
+            source: 'company-site', appliedDate: dayStr(24), priority: 'medium',
+          }, [['saved', 27], ['applied', 24], ['ghosted', 4]]),
+          mkJob({
+            title: 'Design Systems Designer', company: 'Atlas SaaS', location: 'Remote — US',
+            arrangement: 'remote', employmentType: 'contract', salaryMin: 70, salaryMax: 85, salaryPeriod: 'hour',
+            source: 'job-board', appliedDate: dayStr(13), priority: 'medium', followUpDate: dayStr(1),
+            fit: { ...jobsBlankJob().fit, overall: 7 },
+          }, [['saved', 15], ['applied', 13], ['screening', 5]]),
+          mkJob({
+            title: 'Senior Visual Designer', company: 'Brightline Agency', location: 'New York, NY',
+            arrangement: 'onsite', employmentType: 'full-time', salaryMin: 90000, salaryMax: 105000,
+            source: 'linkedin', appliedDate: dayStr(21), priority: 'low',
+          }, [['saved', 23], ['applied', 21], ['rejected', 10]]),
+          mkJob({
+            title: 'Product Designer', company: 'Verdant Climate', location: 'Remote — EU overlap',
+            arrangement: 'remote', employmentType: 'full-time',
+            source: 'job-board', deadline: dayStr(-2), priority: 'high',
+            fit: { ...jobsBlankJob().fit, overall: 8, interest: 9 },
+            tasks: [{ ...jobsBlankTask(), title: 'Tailor resume for climate focus', type: 'customize-resume', due: dayStr(-1), priority: 'high' }],
+          }, [['saved', 5], ['preparing', 2]]),
+          mkJob({
+            title: 'Web Designer (Webflow)', company: 'Halo Studios', location: 'Remote — Worldwide',
+            arrangement: 'remote', employmentType: 'freelance',
+            source: 'recruiter', priority: 'low',
+          }, [['saved', 3]]),
+          mkJob({
+            title: 'Lead Product Designer', company: 'Pillar Health', location: 'Austin, TX',
+            arrangement: 'hybrid', employmentType: 'full-time', salaryMin: 125000, salaryMax: 150000,
+            source: 'referral', appliedDate: dayStr(40), priority: 'medium',
+          }, [['saved', 44], ['applied', 40], ['screening', 33], ['interview-1', 26], ['withdrawn', 20]]),
+        ];
+        const jobsState = {
+          schemaVersion: 1,
+          jobs,
+          settings: { statuses: JOBS_DEFAULT_STATUSES.map((s) => ({ ...s })), stalledDays: 14, deadlineWarnDays: 3 },
+          view: { mode: 'dashboard', visibleColumns: [...JOBS_DEFAULT_COLUMNS], sortBy: 'followUpDate', sortDir: 'asc' },
+          updatedAt: new Date().toISOString(),
+        };
+        lsSet('vaugn.jobs.v1', JSON.stringify(jobsState));
+      }
+
       // 30 days of gently-growing history so Trends unlock immediately.
       const entries = Array.from({ length: 30 }, (_, i) => {
         const ago = 29 - i;
@@ -141,6 +225,8 @@
     if (welcomeRow) welcomeRow.appendChild(btn());
     const crmEmptyRow = document.querySelector('#crmEmpty .btn-row');
     if (crmEmptyRow) crmEmptyRow.appendChild(btn());
+    const jobsEmptyRow = document.querySelector('#jobsEmpty .btn-row');
+    if (jobsEmptyRow) jobsEmptyRow.appendChild(btn());
     if (document.body.dataset.page === 'reports') {
       const cta = document.createElement('div');
       cta.className = 'sample-cta';

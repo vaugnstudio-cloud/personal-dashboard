@@ -10,7 +10,7 @@
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const PAGE = document.body.dataset.page || 'dashboard';
-  const API = () => window.Dashboard || window.CrmUI || window.SettingsUI;   // page UI adapter
+  const API = () => window.Dashboard || window.CrmUI || window.JobsUI || window.SettingsUI;   // page UI adapter
 
   const openDrawerHook = async () => { API().openDrawer(); await wait(420); };
   const closeDrawerHook = async () => { API().closeDrawer(); await wait(320); };
@@ -249,6 +249,126 @@
     },
   ];
 
+  /* ── Job Applications steps ─────────────────────────────── */
+
+  // If the career pipeline is empty, the tour adds a demo application so
+  // every step has something real to point at — removed when it ends.
+  let demoJobId = null;
+  const jobsOnStart = async () => {
+    if (window.JobsUI) JobsUI.setView('dashboard');
+    if (window.JobsStore && !JobsStore.hasData()) {
+      const job = JobsStore.create({
+        title: 'Senior Product Designer (demo)', company: 'Northwind Health',
+        location: 'Remote — North America', arrangement: 'remote', employmentType: 'full-time',
+        salaryMin: 95000, salaryMax: 120000, source: 'job-board',
+        priority: 'high', followUpDate: crmToday ? crmToday() : jobsToday(),
+        skills: ['Figma', 'Design systems', 'Prototyping'],
+        notes: 'Demo application — removed automatically when the tour ends.',
+      });
+      JobsStore.setStatus(job.id, 'applied');
+      demoJobId = job.id;
+      await wait(250);
+    }
+  };
+  const jobsOnEnd = () => {
+    if (demoJobId) { JobsStore.remove([demoJobId]); demoJobId = null; }
+    if (window.JobsUI) JobsUI.setView('dashboard');
+  };
+  const jobsView = (view) => async () => { window.JobsUI.setView(view); await wait(380); };
+  const jobsOpenHook = async () => { window.JobsUI.setView('table'); await wait(250); window.JobsUI.openFirstJob(); await wait(450); };
+  const jobsCloseHook = async () => { window.JobsUI.closeDrawer(); await wait(320); };
+
+  const JOBS_FULL = [
+    {
+      target: '.crm-head',
+      title: 'Welcome to your Career Pipeline 💼',
+      before: jobsView('dashboard'),
+      text: 'Every job application — from saved listing to signed offer — tracked in one place, completely separate from your freelance Sales Pipeline. Let’s walk through it.',
+    },
+    {
+      target: '.jb-quick',
+      title: 'The magic trick: import from a link 🔗',
+      text: 'Paste a job listing URL here. Greenhouse, Lever, Ashby, Workable and SmartRecruiters links import automatically; blocked sites (like LinkedIn) switch to an honest paste-the-description flow. You always review before anything is saved.',
+    },
+    {
+      target: '#jobsKpis',
+      title: 'Your search at a glance',
+      text: 'Active applications, weekly volume, upcoming interviews, offers and what’s due today — every number is clickable and computed live from your records.',
+    },
+    {
+      target: '#jobsAttention',
+      title: 'Needs your attention 📌',
+      text: 'A private advisor reads your real records: overdue follow-ups, closing deadlines, stalled applications, which source actually answers. Red = act, amber = watch, green = win.',
+    },
+    {
+      target: '#jobsChips',
+      title: 'The Applications table',
+      before: jobsView('table'),
+      text: 'Filter by stage with one click — the ⚠ Due chip is your morning routine. Search with /, sort any column, and use the Columns button to show exactly the fields you care about.',
+    },
+    {
+      target: '#jobsTbody .lead-row, #jobsCards .lead-card',
+      title: 'Every row is an application',
+      text: 'Company and role, stage badge, priority, days since applied, fit score, deadline and follow-up. Click the badge to change stage, click the row for the full record.',
+    },
+    {
+      target: '#jobsDrawer',
+      title: 'The full record',
+      before: jobsOpenHook,
+      text: 'Everything lives here: the complete job details, company research, contacts, interviews with prep notes, tasks, your fit scores and a full activity timeline. It saves as you type.',
+    },
+    {
+      target: '#jobsBoard',
+      title: 'The Pipeline board',
+      before: async () => { await jobsCloseHook(); await jobsView('board')(); },
+      text: 'Drag cards between stages — every move is logged with a timestamp. Keyboard works too: focus a card, then [ and ] move it, Enter opens the stage menu.',
+    },
+    {
+      target: '#jobsCalGrid, .jb-agenda',
+      title: 'Calendar & agenda 🗓',
+      before: jobsView('calendar'),
+      text: 'Deadlines, interviews, follow-ups and tasks — all dated things land here automatically. The agenda pins overdue items on top so nothing slips.',
+    },
+    {
+      target: '#jobsRptHealth',
+      title: 'Career Pipeline Health 🩺',
+      before: jobsView('reports'),
+      text: 'Weekly, monthly or custom-range reports: response rates, source effectiveness, stage timing and a health summary — computed only from what actually happened.',
+    },
+    {
+      target: '#jobsMoreBtn',
+      title: 'Your data, protected 💾',
+      before: jobsView('table'),
+      text: 'CSV in and out, JSON backups, print-ready reports — all in this menu. Everything stays in this browser. That’s the tour — go import a real listing!',
+    },
+  ];
+
+  const JOBS_QUICK = [
+    {
+      target: '.jb-quick',
+      title: 'Welcome 💼 Import from a link',
+      before: jobsView('dashboard'),
+      text: 'Paste a job listing URL — supported boards import automatically, blocked ones switch to paste-the-description. You review everything before saving.',
+    },
+    {
+      target: '#jobsKpis',
+      title: 'Your search at a glance',
+      text: 'Active applications, interviews, offers and today’s follow-ups — all clickable, all computed from your real records.',
+    },
+    {
+      target: '#jobsBoard',
+      title: 'The Pipeline board',
+      before: jobsView('board'),
+      text: 'Drag applications through the stages — every move is logged. Enter opens the stage menu; [ and ] move a card.',
+    },
+    {
+      target: '#jobsChips',
+      title: 'The ⚠ Due chip is your morning',
+      before: jobsView('table'),
+      text: 'Open it daily, clear every follow-up, set the next dates. Done — go add a real application!',
+    },
+  ];
+
   /* ── Reports steps ──────────────────────────────────────── */
 
   const REPORTS_FULL = [
@@ -315,6 +435,7 @@
   const TOURS = {
     dashboard: { full: DASH_FULL, quick: DASH_QUICK, welcomeKey: 'vaugn.dashboard.welcomed' },
     crm:       { full: CRM_FULL,  quick: CRM_QUICK,  welcomeKey: 'vaugn.crm.welcomed', onStart: crmOnStart, onEnd: crmOnEnd },
+    jobs:      { full: JOBS_FULL, quick: JOBS_QUICK, welcomeKey: 'vaugn.jobs.welcomed', onStart: jobsOnStart, onEnd: jobsOnEnd },
     reports:   { full: REPORTS_FULL, quick: REPORTS_QUICK, welcomeKey: 'vaugn.reports.welcomed' },
   };
 
@@ -439,6 +560,7 @@
       window.addEventListener('resize', this._onMove);
       document.addEventListener('store:changed', this._onStore);
       document.addEventListener('crm:changed', this._onMove);
+      document.addEventListener('jobs:changed', this._onMove);
       if (cfg.onStart) await cfg.onStart();
       await this.show(0);
     },
@@ -523,10 +645,11 @@
       window.removeEventListener('resize', this._onMove);
       document.removeEventListener('store:changed', this._onStore);
       document.removeEventListener('crm:changed', this._onMove);
+      document.removeEventListener('jobs:changed', this._onMove);
       if (API()) API().closeDrawer();
       if (cfg && cfg.onEnd) cfg.onEnd();
       try { localStorage.setItem(cfg.welcomeKey, '1'); } catch (err) { /* ignore */ }
-      const doneMsg = { crm: 'You’re all set 🧭 Go add your first real lead.', reports: 'You’re all set 📈 Check your insights weekly.' };
+      const doneMsg = { crm: 'You’re all set 🧭 Go add your first real lead.', jobs: 'You’re all set 💼 Go import your first real listing.', reports: 'You’re all set 📈 Check your insights weekly.' };
       API().toast(finished
         ? (doneMsg[PAGE] || 'You’re all set 🎉 Your dashboard is ready.')
         : 'Tutorial closed — reopen it anytime from Help.');

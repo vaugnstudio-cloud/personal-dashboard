@@ -11,6 +11,7 @@
 
   if (!Store.state) Store.load();
   if (window.CrmStore && !CrmStore.state) CrmStore.load();
+  if (window.JobsStore && !JobsStore.state) JobsStore.load();
 
   const $ = (sel) => document.querySelector(sel);
   const PAGE = document.body.dataset.page || 'dashboard';
@@ -100,15 +101,32 @@
 
     <div class="drawer__section" id="drawerBackup">
       <h3>Backup</h3>
-      <p><strong>Your data lives only in this browser.</strong> Clearing your browser or switching devices erases it — so export a backup regularly (or use Google Sheets sync above). Two files: dashboard metrics and pipeline leads.</p>
+      <p><strong>Your data lives only in this browser.</strong> Clearing your browser or switching devices erases it — so export a backup regularly (or use Google Sheets sync above). Three files: dashboard metrics, pipeline leads and job applications.</p>
       <div class="btn-row">
         <button class="btn" id="exportBtn">⬇ Dashboard JSON</button>
         <button class="btn" id="exportCrmBtn">⬇ Pipeline JSON</button>
+        <button class="btn" id="exportJobsBtn">⬇ Career JSON</button>
       </div>
       <div class="btn-row" style="margin-top:10px">
         <label class="btn file-btn">⬆ Import dashboard<input type="file" id="importInput" accept="application/json,.json" hidden /></label>
         <label class="btn file-btn">⬆ Import pipeline<input type="file" id="importCrmInput" accept="application/json,.json" hidden /></label>
+        <label class="btn file-btn">⬆ Import career<input type="file" id="importJobsInput" accept="application/json,.json" hidden /></label>
       </div>
+    </div>
+
+    <div class="drawer__section" id="drawerJobs" hidden>
+      <h3>Job Applications</h3>
+      <p>Customize the application pipeline stages. Renaming or recoloring never touches your records; deleting a stage asks where its applications should move.</p>
+      <div id="jobsStatusEditor"></div>
+      <div class="btn-row" style="margin-bottom:14px">
+        <button class="btn" id="jobsStatusAdd">＋ Add stage</button>
+      </div>
+      <label class="field"><span>Mark applications stalled after (days)</span>
+        <input type="number" id="jobsStalledDays" min="3" max="90" step="1" />
+      </label>
+      <label class="field"><span>Warn about deadlines within (days)</span>
+        <input type="number" id="jobsWarnDays" min="1" max="30" step="1" />
+      </label>
     </div>
 
     <div class="drawer__section" id="drawerSample">
@@ -201,7 +219,7 @@
     const prev = $('#logoPreview');
     if (prev) prev.innerHTML = logo ? `<img src="${logo}" alt="" />` : (name.trim()[0] || 'S').toUpperCase();
     // consistent per-page titles that follow the brand name
-    const PAGE_LABELS = { dashboard: 'Dashboard', crm: 'Sales Pipeline', reports: 'Reports' };
+    const PAGE_LABELS = { dashboard: 'Dashboard', crm: 'Sales Pipeline', jobs: 'Job Applications', reports: 'Reports' };
     document.title = `${PAGE_LABELS[PAGE] || 'Dashboard'} — ${name}`;
   }
 
@@ -355,6 +373,7 @@
     $('#kpiSyncToggle').checked = s.kpiSync !== false;
     renderThemeGrid();
     renderSampleBtn();
+    if (window.__jobsSettingsRefresh) window.__jobsSettingsRefresh();
   }
   function close() {
     if (drawer.contains(document.activeElement)) document.activeElement.blur();
@@ -450,6 +469,130 @@
     catch (err) { toast(err.message || 'Could not import that file.', 'error'); }
     e.target.value = '';
   });
+  $('#exportJobsBtn').addEventListener('click', () => {
+    if (window.JobsStore) { JobsStore.exportJSON(); markBackedUp(); toast('Career pipeline backup downloaded. 💾'); }
+    else toast('Open the Job Applications page once first.', 'error');
+  });
+  $('#importJobsInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!window.JobsStore) { toast('Open the Job Applications page once first.', 'error'); e.target.value = ''; return; }
+    try { toast(`Imported ${JobsStore.importJSON(await file.text())} applications.`); }
+    catch (err) { toast(err.message || 'Could not import that file.', 'error'); }
+    e.target.value = '';
+  });
+
+  /* ══════════════ Job Applications settings ══════════════ */
+
+  (function jobsSettings() {
+    if (!window.JobsStore) return;   // pages that don't load the jobs module
+    const section = $('#drawerJobs');
+    section.hidden = false;
+
+    function statusInUse(id) { return JobsStore.state.jobs.filter((j) => j.status === id).length; }
+
+    function renderStatusEditor() {
+      const statuses = JobsStore.statuses();
+      $('#jobsStatusEditor').innerHTML = statuses.map((s, i) => `
+        <div class="jb-status-row" data-st="${s.id}">
+          <input type="text" data-st-label value="${s.label.replace(/"/g, '&quot;')}" aria-label="Stage name" maxlength="24" />
+          <select data-st-color aria-label="Badge color">${JOBS_BADGE_COLORS.map((c) => `<option value="${c}" ${s.color === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+          <select data-st-group aria-label="Analytics group" title="Used by stats & reports">${JOBS_GROUPS.map((g) => `<option value="${g.id}" ${s.group === g.id ? 'selected' : ''}>${g.label}</option>`).join('')}</select>
+          <button class="jb-st-btn" data-st-up ${i === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="jb-st-btn" data-st-down ${i === statuses.length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+          <button class="jb-st-btn jb-st-btn--del" data-st-del ${statuses.length <= 2 ? 'disabled' : ''} title="Delete stage">✕</button>
+        </div>`).join('');
+    }
+
+    $('#jobsStatusEditor').addEventListener('change', (e) => {
+      const row = e.target.closest('[data-st]');
+      if (!row) return;
+      const s = JobsStore.statuses().find((x) => x.id === row.dataset.st);
+      if (!s) return;
+      if (e.target.hasAttribute('data-st-label')) s.label = e.target.value.trim() || s.label;
+      if (e.target.hasAttribute('data-st-color')) s.color = e.target.value;
+      if (e.target.hasAttribute('data-st-group')) s.group = e.target.value;
+      JobsStore.save();
+      renderStatusEditor();
+    });
+
+    $('#jobsStatusEditor').addEventListener('click', (e) => {
+      const statuses = JobsStore.state.settings.statuses;
+      const re = e.target.closest('.jb-status-reassign');
+      if (re) {
+        if (e.target.closest('[data-st-confirm]')) {
+          const from = re.dataset.stReassign;
+          const to = re.querySelector('select').value;
+          JobsStore.state.jobs.forEach((j) => {
+            if (j.status === from) JobsStore.setStatus(j.id, to, { log: `Stage removed — moved to ${JobsStore.status(to).label}` });
+          });
+          const idx = statuses.findIndex((x) => x.id === from);
+          if (idx > -1) statuses.splice(idx, 1);
+          JobsStore.save(); renderStatusEditor();
+          toast('Stage deleted — applications reassigned.');
+        } else if (e.target.closest('[data-st-cancel]')) {
+          renderStatusEditor();
+        }
+        return;
+      }
+      const row = e.target.closest('[data-st]');
+      if (!row) return;
+      const i = statuses.findIndex((x) => x.id === row.dataset.st);
+      if (i < 0) return;
+      if (e.target.closest('[data-st-up]') && i > 0) {
+        [statuses[i - 1], statuses[i]] = [statuses[i], statuses[i - 1]];
+        JobsStore.save(); renderStatusEditor();
+      } else if (e.target.closest('[data-st-down]') && i < statuses.length - 1) {
+        [statuses[i + 1], statuses[i]] = [statuses[i], statuses[i + 1]];
+        JobsStore.save(); renderStatusEditor();
+      } else if (e.target.closest('[data-st-del]')) {
+        const used = statusInUse(statuses[i].id);
+        if (used > 0) {
+          const others = statuses.filter((x) => x.id !== statuses[i].id);
+          row.insertAdjacentHTML('afterend', `
+            <div class="jb-status-reassign" data-st-reassign="${statuses[i].id}">
+              <span>${used} application${used === 1 ? '' : 's'} use this stage — move them to:</span>
+              <select>${others.map((o) => `<option value="${o.id}">${o.label.replace(/</g, '&lt;')}</option>`).join('')}</select>
+              <button class="btn btn--danger" data-st-confirm>Move &amp; delete</button>
+              <button class="btn" data-st-cancel>Cancel</button>
+            </div>`);
+          row.hidden = true;
+        } else {
+          statuses.splice(i, 1);
+          JobsStore.save(); renderStatusEditor();
+          toast('Stage deleted.');
+        }
+      }
+    });
+
+    $('#jobsStatusAdd').addEventListener('click', () => {
+      JobsStore.state.settings.statuses.push({ id: jobsUid('st_'), label: 'New stage', group: 'applied', color: 'slate' });
+      JobsStore.save();
+      renderStatusEditor();
+      const rows = document.querySelectorAll('.jb-status-row');
+      rows[rows.length - 1]?.querySelector('[data-st-label]')?.select();
+    });
+
+    $('#jobsStalledDays').addEventListener('change', (e) => {
+      const n = Math.max(3, Math.min(90, parseInt(e.target.value, 10) || 14));
+      e.target.value = n;
+      JobsStore.setSetting('stalledDays', n);
+      toast(`Applications count as stalled after ${n} days.`);
+    });
+    $('#jobsWarnDays').addEventListener('change', (e) => {
+      const n = Math.max(1, Math.min(30, parseInt(e.target.value, 10) || 3));
+      e.target.value = n;
+      JobsStore.setSetting('deadlineWarnDays', n);
+      toast(`Deadline warnings start ${n} day${n === 1 ? '' : 's'} ahead.`);
+    });
+
+    window.__jobsSettingsRefresh = () => {
+      renderStatusEditor();
+      $('#jobsStalledDays').value = JobsStore.state.settings.stalledDays;
+      $('#jobsWarnDays').value = JobsStore.state.settings.deadlineWarnDays;
+    };
+    window.__jobsSettingsRefresh();
+  })();
 
   /* ══════════════ Sample data + danger zone ══════════════ */
 
@@ -470,9 +613,9 @@
   });
 
   $('#resetBtn').addEventListener('click', () => {
-    if (confirm('Reset ALL data (dashboard, pipeline, history) in this browser? This cannot be undone.')) {
-      ['vaugn.dashboard.v1', 'vaugn.crm.v1', 'vaugn.history.v1', 'vaugn.sample',
-       'vaugn.stash.dashboard', 'vaugn.stash.crm', 'vaugn.stash.history']
+    if (confirm('Reset ALL data (dashboard, pipeline, job applications, history) in this browser? This cannot be undone.')) {
+      ['vaugn.dashboard.v1', 'vaugn.crm.v1', 'vaugn.jobs.v1', 'vaugn.history.v1', 'vaugn.sample',
+       'vaugn.stash.dashboard.v1', 'vaugn.stash.crm.v1', 'vaugn.stash.jobs.v1', 'vaugn.stash.history.v1']
         .forEach((k) => { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } });
       location.reload();
     }
@@ -485,8 +628,9 @@
 
   function hasRealData() {
     const leads = window.CrmStore && CrmStore.state && CrmStore.state.leads.length > 0;
+    const jobs = window.JobsStore && JobsStore.state && JobsStore.state.jobs.length > 0;
     const metrics = METRICS.some((m) => Store.get(m.id).value > 0);
-    return leads || metrics;
+    return leads || jobs || metrics;
   }
 
   function backupDue() {

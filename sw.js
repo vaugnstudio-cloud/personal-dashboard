@@ -3,11 +3,12 @@
    Subresources are cache-first with background refresh.
    Redirected responses are re-wrapped before caching: serving a redirected
    response for a navigation is forbidden and error-pages the tab. */
-const CACHE = 'studioos-v4';
+const CACHE = 'studioos-v5';
 const SHELL = [
   './',
   './index.html',
   './crm.html',
+  './jobs.html',
   './reports.html',
   './manifest.webmanifest',
   './assets/icon.svg',
@@ -25,6 +26,13 @@ const SHELL = [
   './assets/js/crm/crm-store.js',
   './assets/js/crm/crm-table.js',
   './assets/js/crm/crm-app.js',
+  './assets/js/jobs/jobs-data.js',
+  './assets/js/jobs/jobs-store.js',
+  './assets/js/jobs/jobs-render.js',
+  './assets/js/jobs/jobs-extract.js',
+  './assets/js/jobs/jobs-import-ui.js',
+  './assets/js/jobs/jobs-views.js',
+  './assets/js/jobs/jobs-app.js',
   './assets/js/reports/charts.js',
   './assets/js/reports/insights.js',
   './assets/js/reports/reports-app.js',

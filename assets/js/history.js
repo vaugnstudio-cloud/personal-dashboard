@@ -47,6 +47,15 @@ const History = {
         wonThisMonth: s.wonThisMonth,
       };
     }
+    if (window.JobsStore && JobsStore.state) {
+      const j = JobsStore.stats();
+      snap.jobs = {
+        active: j.active,
+        appliedTotal: j.appliedTotal,
+        interviewsUpcoming: j.interviewsUpcoming,
+        offers: j.offers,
+      };
+    }
     return snap;
   },
 
@@ -63,10 +72,10 @@ const History = {
   /** Number of distinct days recorded. */
   days() { return this.entries.length; },
 
-  /** [{date, value}] series for a dashboard metric or a pipeline stat. */
+  /** [{date, value}] series for a dashboard metric, pipeline stat or jobs stat. */
   series(key, source = 'metrics') {
     return this.entries
-      .map((e) => ({ date: e.date, value: source === 'pipeline' ? e.pipeline?.[key] : e.metrics?.[key] }))
+      .map((e) => ({ date: e.date, value: source === 'pipeline' ? e.pipeline?.[key] : source === 'jobs' ? e.jobs?.[key] : e.metrics?.[key] }))
       .filter((p) => Number.isFinite(p.value));
   },
 };
@@ -78,6 +87,7 @@ window.History = History;
    (load() is a read-only hydrate — safe to call more than once). */
 if (!Store.state) Store.load();
 if (window.CrmStore && !CrmStore.state) CrmStore.load();
+if (window.JobsStore && !JobsStore.state) JobsStore.load();
 History.load();
 History.snapshot();
 let historyTimer;
@@ -87,3 +97,4 @@ const refreshToday = () => {
 };
 document.addEventListener('store:changed', refreshToday);
 document.addEventListener('crm:changed', refreshToday);
+document.addEventListener('jobs:changed', refreshToday);

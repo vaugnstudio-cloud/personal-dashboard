@@ -7,6 +7,7 @@
 
   Store.load();
   if (window.CrmStore) CrmStore.load();
+  if (window.JobsStore) JobsStore.load();
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -290,6 +291,27 @@
       </div>`;
   }
 
+  /* ── Career summary strip ───────────────────────────────── */
+
+  function renderCareer() {
+    const wrap = $('#careerStrip');
+    if (!wrap) return;
+    if (!window.JobsStore || !JobsStore.hasData()) { wrap.innerHTML = ''; return; }
+    const s = JobsStore.stats();
+    const due = s.dueToday + s.overdue;
+    wrap.innerHTML = `
+      <div class="pipe-strip">
+        <a class="pipe-strip__title" href="jobs.html">💼 Job Applications →</a>
+        <div class="pipe-strip__stats">
+          <span><strong>${s.active}</strong> active</span>
+          <span><strong>${s.appliedWeek}</strong> this week</span>
+          <a href="jobs.html#view=calendar"><strong>${s.interviewsUpcoming}</strong> interview${s.interviewsUpcoming === 1 ? '' : 's'}</a>
+          ${s.offers ? `<span><strong>${s.offers}</strong> offer${s.offers === 1 ? '' : 's'} 🎉</span>` : ''}
+          <a href="jobs.html#view=table&status=due" class="${due ? 'pipe-strip__due' : ''}"><strong>${due}</strong> due</a>
+        </div>
+      </div>`;
+  }
+
   /* ── Header meta ────────────────────────────────────────── */
 
   function renderMeta() {
@@ -335,14 +357,16 @@
     renderChecklist();
     renderSections();
     renderPipeline();
+    renderCareer();
     renderMeta();
   }
 
   document.addEventListener('store:changed', renderAll);
 
-  // Live-refresh when the pipeline changes in another tab
+  // Live-refresh when the pipeline or career data changes in another tab
   window.addEventListener('storage', (e) => {
     if (e.key === 'vaugn.crm.v1' && window.CrmStore) { CrmStore.load(); renderAll(); }
+    if (e.key === 'vaugn.jobs.v1' && window.JobsStore) { JobsStore.load(); renderAll(); }
   });
 
   renderAll();
